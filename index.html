@@ -1,0 +1,3301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>情绪日记</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f5f7fa;
+    --card: #fff;
+    --text: #333;
+    --text-secondary: #888;
+    --primary: #6c5ce7;
+    --border: #eee;
+    /* Mood theme variables */
+    --sky-top: #fff3d6;
+    --sky-mid: #fce4b8;
+    --sky-bottom: #f5d5a0;
+    --ground-top: rgba(80,120,50,0.25);
+    --ground-bottom: rgba(50,85,30,0.4);
+    --sun-core: rgba(255,230,160,0.9);
+    --sun-outer: rgba(255,200,120,0.4);
+    --firefly-color: rgba(255,240,180,0.9);
+    --firefly-glow: rgba(255,230,150,0.5);
+    --bokeh-color: rgba(255,245,220,0.3);
+    --char-filter: none;
+    --header-grad-start: transparent;
+    --header-grad-end: transparent;
+    --tree-tint-filter: none;
+  }
+
+  /* === Scene: Sunny (happy/excited/grateful) === */
+  body.scene-sunny {
+    --sky-top: #ffeaa7;
+    --sky-mid: #fdcb6e;
+    --sky-bottom: #f5d5a0;
+    --sun-core: rgba(255,230,160,0.95);
+    --sun-outer: rgba(255,200,120,0.45);
+    --firefly-color: rgba(255,240,180,0.95);
+    --firefly-glow: rgba(255,230,150,0.55);
+    --bokeh-color: rgba(255,245,220,0.35);
+    --char-filter: none;
+    --header-grad-start: rgba(255,200,100,0.5);
+    --header-grad-end: rgba(255,150,50,0.3);
+    --tree-tint-filter: none;
+    --primary: #f39c12;
+  }
+
+  /* === Scene: Calm (calm) === */
+  body.scene-calm {
+    --sky-top: #a0d4ce;
+    --sky-mid: #6bc5b8;
+    --sky-bottom: #2d9e8e;
+    --sun-core: rgba(200,255,230,0.7);
+    --sun-outer: rgba(129,236,236,0.25);
+    --firefly-color: rgba(129,236,236,0.75);
+    --firefly-glow: rgba(85,239,196,0.35);
+    --bokeh-color: rgba(200,255,240,0.3);
+    --char-filter: hue-rotate(140deg) saturate(0.8);
+    --header-grad-start: rgba(0,184,148,0.45);
+    --header-grad-end: rgba(0,200,150,0.25);
+    --tree-tint-filter: hue-rotate(-40deg) saturate(0.85);
+    --primary: #00b894;
+  }
+
+  /* === Scene: Rainy (sad/tired) === */
+  body.scene-rainy {
+    --sky-top: #74b9ff;
+    --sky-mid: #a0c4e8;
+    --sky-bottom: #8fa8c0;
+    --sun-core: rgba(200,220,255,0.3);
+    --sun-outer: rgba(150,180,220,0.1);
+    --firefly-color: rgba(160,190,220,0.55);
+    --firefly-glow: rgba(130,160,200,0.25);
+    --bokeh-color: rgba(180,200,230,0.25);
+    --char-filter: hue-rotate(200deg) saturate(0.6) brightness(0.9);
+    --header-grad-start: rgba(116,185,255,0.45);
+    --header-grad-end: rgba(80,130,180,0.25);
+    --tree-tint-filter: hue-rotate(-10deg) saturate(0.7) brightness(0.9);
+    --primary: #74b9ff;
+  }
+
+  /* === Scene: Stormy (angry/anxious) === */
+  body.scene-stormy {
+    --sky-top: #2d1b69;
+    --sky-mid: #1a1a4e;
+    --sky-bottom: #0d0d3b;
+    --sun-core: rgba(180,140,255,0.15);
+    --sun-outer: rgba(120,80,200,0.05);
+    --firefly-color: rgba(180,140,255,0.45);
+    --firefly-glow: rgba(140,100,220,0.25);
+    --bokeh-color: rgba(120,80,200,0.2);
+    --char-filter: hue-rotate(260deg) saturate(0.5) brightness(0.7);
+    --header-grad-start: rgba(45,27,105,0.65);
+    --header-grad-end: rgba(26,26,78,0.35);
+    --tree-tint-filter: hue-rotate(40deg) saturate(0.5) brightness(0.7);
+    --primary: #6c5ce7;
+  }
+
+  /* === Scene: Mixed === */
+  body.scene-mixed {
+    --sky-top: #ffeaa7;
+    --sky-mid: #fdcb6e;
+    --sky-bottom: #f5d5a0;
+    --sun-core: rgba(255,230,200,0.8);
+    --sun-outer: rgba(255,200,160,0.35);
+    --firefly-color: rgba(255,220,200,0.75);
+    --firefly-glow: rgba(255,200,160,0.4);
+    --bokeh-color: rgba(255,240,220,0.3);
+    --char-filter: none;
+    --header-grad-start: rgba(253,203,110,0.45);
+    --header-grad-end: rgba(162,155,254,0.35);
+    --tree-tint-filter: hue-rotate(20deg) saturate(0.9);
+    --primary: #e17055;
+  }
+
+  /* === Scene: Default (no records yet) === */
+  body.scene-default {
+    --sky-top: #fff3d6;
+    --sky-mid: #fce4b8;
+    --sky-bottom: #f5d5a0;
+    --sun-core: rgba(255,230,160,0.9);
+    --sun-outer: rgba(255,200,120,0.4);
+    --firefly-color: rgba(255,240,180,0.9);
+    --firefly-glow: rgba(255,230,150,0.5);
+    --bokeh-color: rgba(255,245,220,0.3);
+    --char-filter: none;
+    --header-grad-start: transparent;
+    --header-grad-end: transparent;
+    --tree-tint-filter: none;
+    --primary: #6c5ce7;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 20px;
+  }
+
+  /* ===== Header Cover ===== */
+  header {
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.8s ease;
+  }
+  header:active { opacity: 0.92; }
+
+  .scene-content {
+    position: relative;
+    z-index: 2;
+    padding: 32px 16px 28px;
+    width: 100%;
+  }
+  .scene-content h1 { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+  .scene-content .header-subtitle { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+
+  .header-mood-summary {
+    margin-top: 12px;
+    font-size: 14px;
+    opacity: 0.95;
+    line-height: 1.5;
+    min-height: 20px;
+  }
+
+  /* Floating decorations */
+  .scene-deco {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .scene-deco .float-item {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.35;
+    animation: floatDrift 6s ease-in-out infinite;
+  }
+  .scene-deco .float-item:nth-child(1) { top: 10%; left: 8%; animation-delay: 0s; font-size: 32px; }
+  .scene-deco .float-item:nth-child(2) { top: 60%; left: 85%; animation-delay: 1.5s; font-size: 24px; }
+  .scene-deco .float-item:nth-child(3) { top: 20%; left: 75%; animation-delay: 3s; font-size: 20px; }
+  .scene-deco .float-item:nth-child(4) { top: 70%; left: 12%; animation-delay: 0.8s; font-size: 22px; }
+  .scene-deco .float-item:nth-child(5) { top: 40%; left: 50%; animation-delay: 2.2s; font-size: 18px; }
+
+  @keyframes floatDrift {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.35; }
+    25% { transform: translateY(-12px) rotate(5deg); opacity: 0.5; }
+    50% { transform: translateY(-6px) rotate(-3deg); opacity: 0.4; }
+    75% { transform: translateY(-16px) rotate(4deg); opacity: 0.45; }
+  }
+
+  /* Bokeh particles */
+  .scene-deco .bokeh {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.12;
+    animation: bokehPulse 5s ease-in-out infinite;
+  }
+  .scene-deco .bokeh:nth-child(6) { width: 80px; height: 80px; top: -20px; left: -10px; background: rgba(255,240,200,0.6); animation-delay: 0s; }
+  .scene-deco .bokeh:nth-child(7) { width: 120px; height: 120px; bottom: -40px; right: -30px; background: rgba(255,240,200,0.5); animation-delay: 1.2s; }
+  .scene-deco .bokeh:nth-child(8) { width: 50px; height: 50px; top: 40%; right: 20%; background: rgba(255,240,200,0.5); animation-delay: 2.5s; }
+
+  @keyframes bokehPulse {
+    0%, 100% { transform: scale(1); opacity: 0.1; }
+    50% { transform: scale(1.3); opacity: 0.2; }
+  }
+
+  /* ===== Forest Full-Page Background ===== */
+
+  body {
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 35%, var(--sky-bottom) 65%, var(--ground-top) 85%, var(--ground-bottom) 100%);
+    min-height: 100vh;
+    position: relative;
+    transition: background 0.8s ease;
+  }
+
+  .forest-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .container { position: relative; z-index: 1; }
+
+  header {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, var(--header-grad-start), var(--header-grad-end)) !important;
+    box-shadow: none;
+  }
+
+  /* All content panels get glass effect */
+  .tab-panel { position: relative; z-index: 1; }
+  .home-card, .history-item, .stat-card, .chat-container, .panel-header { position: relative; }
+
+  /* Glass card style for all content blocks */
+  .home-card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,255,255,0.45);
+  }
+  .history-item {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+  }
+  .chat-container {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+  }
+  .panel-header { background: transparent; }
+  .back-btn {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .chat-messages { background: transparent; }
+  .chat-input-bar { background: rgba(250,250,250,0.7); }
+  .chat-hints { background: transparent; }
+  .hint-btn {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+  /* ===== Home Dashboard ===== */
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .home-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-card:active { transform: scale(0.96); }
+  .home-card .icon { font-size: 40px; display: block; margin-bottom: 10px; }
+  .home-card .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .home-card .desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+  .home-card .badge {
+    position: absolute; top: 10px; right: 10px;
+    background: #e74c3c; color: #fff; font-size: 11px;
+    padding: 2px 8px; border-radius: 10px;
+    display: none;
+  }
+  .home-card .badge.show { display: block; }
+
+  .home-card.record { border-color: #fdcb6e; }
+  .home-card.history { border-color: #74b9ff; }
+  .home-card.chat { border-color: #a29bfe; }
+  .home-card.stats { border-color: #fd79a8; }
+
+  .header-title-row {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+
+  .envelope-badge {
+    position: relative; z-index: 5;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+    animation: env-bounce 2.5s ease-in-out infinite;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.12));
+  }
+  .envelope-badge:active { transform: scale(0.85); }
+  .envelope-badge:hover { animation: none; transform: scale(1.15) rotate(-5deg); }
+  .env-body { font-size: 28px; display: block; position: relative; }
+  .env-sticker {
+    position: absolute; top: -5px; right: -8px;
+    font-size: 14px; animation: env-spin 4s ease-in-out infinite;
+    filter: drop-shadow(0 1px 3px rgba(255,100,100,0.3));
+  }
+  .env-status {
+    position: absolute; bottom: -4px; right: -4px;
+    font-size: 9px; background: #e17055; color: #fff;
+    width: 14px; height: 14px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    border: 2px solid #fff;
+  }
+  .env-status.has-letter { background: #2ecc71; }
+  .env-status:empty { display: none; }
+
+  /* --- Mood Calendar --- */
+  .mood-calendar {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+    border-radius: 14px; padding: 16px; margin-bottom: 12px;
+  }
+  .cal-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .cal-nav-btn {
+    background: none; border: 2px solid var(--border); border-radius: 8px;
+    font-size: 20px; padding: 4px 12px; cursor: pointer; color: var(--text);
+    transition: all 0.2s; font-weight: 700;
+  }
+  .cal-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .cal-nav-btn:active { transform: scale(0.9); }
+  .cal-month { font-size: 15px; font-weight: 700; color: var(--text); }
+  .cal-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    text-align: center; font-size: 11px; color: var(--text-secondary);
+    font-weight: 600; margin-bottom: 6px; gap: 2px;
+  }
+  .cal-weekdays span { padding: 4px 0; }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+  .cal-day {
+    aspect-ratio: 1; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    position: relative; transition: transform 0.15s;
+    background: rgba(0,0,0,0.03);
+    min-height: 0;
+  }
+  .cal-day.has-mood { cursor: pointer; }
+  .cal-day.has-mood:hover { transform: scale(1.15); z-index: 2; }
+  .cal-day.other-month { opacity: 0.2; }
+  .cal-day.today {
+    box-shadow: 0 0 0 2px var(--primary);
+    font-weight: 700;
+  }
+  .cal-day .cal-mood-emoji { font-size: 16px; line-height: 1; }
+  .cal-day .cal-day-num {
+    font-size: 10px; position: absolute; bottom: 1px; right: 4px;
+    opacity: 0.5;
+  }
+  .cal-legend {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+    justify-content: center;
+  }
+  .cal-legend-item {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--text-secondary);
+    padding: 2px 8px; border-radius: 10px;
+    background: rgba(0,0,0,0.03);
+  }
+  .cal-legend-item .dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+  }
+
+  /* --- Trend Chart --- */
+  .trend-chart-container {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+    border-radius: 14px; padding: 12px; margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .trend-chart-container canvas { display: block; width: 100%; height: 160px; }
+
+  /* --- Day Detail Modal --- */
+  .day-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.4);
+    justify-content: center; align-items: center; padding: 20px;
+  }
+  .day-modal-overlay.show { display: flex; }
+  .day-modal {
+    background: #fff; border-radius: 18px; max-width: 360px; width: 100%;
+    padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .day-modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .day-modal-date { font-size: 16px; font-weight: 700; color: var(--text); }
+  .day-modal-close {
+    background: none; border: none; font-size: 24px; cursor: pointer;
+    color: #aaa; padding: 0; line-height: 1;
+  }
+  .day-modal-close:hover { color: #e74c3c; }
+  .day-modal-body { display: flex; flex-direction: column; gap: 10px; }
+  .day-modal-record {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    background: #f8f8f8;
+  }
+  .day-modal-record .dm-emoji { font-size: 24px; }
+  .day-modal-record .dm-info { flex: 1; }
+  .day-modal-record .dm-label { font-size: 14px; font-weight: 600; color: var(--text); }
+  .day-modal-record .dm-note { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .day-modal-record .dm-time { font-size: 11px; color: #bbb; }
+  .day-modal-empty {
+    text-align: center; color: #ccc; font-size: 14px; padding: 20px 0;
+  }
+
+  /* --- Profile --- */
+  .profile-container {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+
+  /* Avatar row: user avatar centered, character leaning beside it absolutely */
+  .profile-avatar-row {
+    display: flex; align-items: flex-end;
+    margin-top: 4px;
+    position: relative;
+    width: 90px; /* matches avatar width so centering is correct */
+  }
+  .profile-avatar {
+    width: 90px; height: 90px; border-radius: 50%; overflow: hidden;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    border: 3px solid rgba(255,255,255,0.6);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Character leaning beside avatar — absolutely positioned */
+  .profile-character-buddy {
+    position: absolute;
+    left: 100%; bottom: -2px;
+    width: 60px; height: auto;
+    transform: translateX(-14px) rotate(-8deg);
+    filter: drop-shadow(2px 3px 6px rgba(0,0,0,0.15));
+    transition: transform 0.3s ease;
+    z-index: 3;
+  }
+  .profile-character-buddy:hover {
+    transform: translateX(-14px) rotate(0deg) scale(1.05);
+  }
+
+  .profile-know-yourself {
+    font-size: 12px; color: var(--text-secondary);
+    font-style: italic; letter-spacing: 3px;
+    text-align: center;
+    margin-top: 2px;
+    opacity: 0.75;
+  }
+
+  .profile-card {
+    width: 100%;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+    border-radius: 14px; padding: 18px;
+  }
+  .profile-loading { text-align: center; padding: 30px 0; }
+  .profile-loading p { font-size: 15px; color: var(--text); margin-bottom: 8px; }
+  .profile-loading-sub { font-size: 12px; color: var(--text-secondary) !important; font-weight: 400; }
+  .profile-section { margin-bottom: 16px; }
+  .profile-section:last-child { margin-bottom: 0; }
+  .profile-section-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
+  .profile-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .profile-badge {
+    padding: 4px 12px; border-radius: 14px; font-size: 12px;
+    background: rgba(108,92,231,0.1); color: #6c5ce7; font-weight: 500;
+  }
+  .profile-mbti {
+    display: inline-block; padding: 6px 18px; border-radius: 12px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff; font-size: 20px; font-weight: 800; letter-spacing: 2px;
+  }
+  .profile-text { font-size: 14px; line-height: 1.7; color: var(--text); }
+  .profile-message {
+    background: rgba(108,92,231,0.06);
+    padding: 12px 14px; border-radius: 10px;
+    border-left: 3px solid #6c5ce7;
+    font-style: italic;
+  }
+  .profile-refresh-btn {
+    width: 100%; padding: 12px; border: 2px solid #6c5ce7; border-radius: 12px;
+    background: none; color: #6c5ce7; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .profile-refresh-btn:hover { background: #6c5ce7; color: #fff; }
+  .profile-refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; background: none; }
+  .profile-meta {
+    font-size: 11px; color: #ccc; text-align: center;
+  }
+  .profile-change-avatar {
+    background: rgba(108,92,231,0.1); color: #6c5ce7; border: none;
+    padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 500;
+    cursor: pointer; margin-top: 2px; transition: all 0.2s;
+  }
+  .profile-change-avatar:hover { background: rgba(108,92,231,0.2); }
+
+  .header-avatar {
+    cursor: pointer; width: 32px; height: 32px; flex-shrink: 0;
+    transition: transform 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .header-avatar:hover { transform: scale(1.15) rotate(-5deg); }
+  .header-avatar:active { transform: scale(0.9); }
+  .header-avatar img { width: 30px; height: 30px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1)); }
+
+  @keyframes env-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  @keyframes env-spin {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(10deg) scale(1.1); }
+    75% { transform: rotate(-10deg) scale(1.05); }
+  }
+
+  .home-card .preview {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    width: 36px; height: 36px;
+    border: none; border-radius: 10px;
+    background: var(--card);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .back-btn:active { transform: scale(0.9); }
+  .panel-title { font-size: 17px; font-weight: 600; }
+
+  /* --- Chat: 聊养院 --- */
+  .chat-container {
+    display: flex; flex-direction: column; height: calc(100vh - 280px);
+    min-height: 400px; background: var(--card); border-radius: 14px;
+    overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .chat-header {
+    padding: 14px 16px; background: linear-gradient(135deg, #2d8a4e, #43b06d);
+    color: #fff; display: flex; align-items: center; gap: 10px;
+  }
+  .chat-avatar { font-size: 30px; }
+  .chat-info h3 { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+  .chat-info p { font-size: 11px; opacity: 0.9; }
+  .chat-status { margin-left: auto; font-size: 11px; opacity: 0.85; }
+
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; position: relative; }
+  .msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.ai { align-self: flex-start; background: #e6f5eb; color: var(--text); border-bottom-left-radius: 4px; }
+  .msg.system { align-self: center; background: #f5f5f5; color: #999; font-size: 12px; border-radius: 8px; }
+
+  .msg.loading::after { content: '...'; animation: dots 1.2s infinite; }
+  .msg-del {
+    position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+    border-radius: 50%; border: none; background: #e74c3c; color: #fff;
+    font-size: 14px; line-height: 1; cursor: pointer; opacity: 0;
+    transition: opacity 0.2s; display: flex; align-items: center; justify-content: center;
+    padding: 0; box-shadow: 0 1px 4px rgba(231,76,60,0.3);
+  }
+  .msg:hover .msg-del { opacity: 1; }
+  .msg-del:hover { transform: scale(1.15); }
+  @keyframes dots { 0%,20% { content: '.'; } 40% { content: '..'; } 60%,100% { content: '...'; } }
+
+  .chat-input-bar {
+    display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border);
+    background: #fafafa;
+  }
+  .chat-input {
+    flex: 1; border: 2px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; font-size: 14px; outline: none; font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: var(--primary); }
+  .chat-send {
+    padding: 10px 20px; border: none; border-radius: 10px;
+    background: var(--primary); color: #fff; font-size: 14px;
+    font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+  }
+  .chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+  .chat-send:active:not(:disabled) { transform: scale(0.96); }
+
+  .chat-hints { padding: 0 12px 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .hint-btn {
+    padding: 6px 12px; border: 1px solid var(--border); border-radius: 16px;
+    background: #fff; font-size: 12px; color: var(--text-secondary);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .hint-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  .clear-chat-btn {
+    width: 100%; padding: 10px; border: 2px solid #e74c3c; border-radius: 10px;
+    background: none; color: #e74c3c; font-size: 13px; cursor: pointer;
+    margin-top: 12px; transition: all 0.2s;
+  }
+  .clear-chat-btn:active { background: #fee; }
+
+  /* --- Clear chat button --- */
+
+  /* --- Letter: 本周来信 --- */
+  .letter-container {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45);
+    border-radius: 14px; padding: 24px 20px; margin-bottom: 12px;
+  }
+  .letter-paper {
+    position: relative;
+    background: linear-gradient(145deg, #fef9f0, #fdf6e8);
+    border-radius: 12px; padding: 28px 22px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    border: 1px solid rgba(230,200,160,0.3);
+  }
+  .letter-tts-bar {
+    display: flex; gap: 4px; margin-bottom: 12px;
+    justify-content: flex-end; align-items: center;
+  }
+  .tts-voice-btn {
+    background: none; border: 1px solid #e8d5c0; border-radius: 50%;
+    width: 32px; height: 32px; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0; line-height: 1;
+  }
+  .tts-voice-btn:hover { background: #f5ede4; border-color: #d4b594; }
+  .tts-voice-btn:active { transform: scale(0.9); }
+  .tts-voice-btn.active {
+    background: #d4e8d4; border-color: #7ab07a;
+    box-shadow: 0 0 8px rgba(122,176,122,0.35);
+  }
+  .tts-voice-btn.playing {
+    background: #7ab07a; border-color: #5a905a; color: #fff;
+    animation: tts-pulse 1.5s infinite;
+  }
+  @keyframes tts-pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(122,176,122,0.3); }
+    50% { box-shadow: 0 0 16px rgba(122,176,122,0.6); }
+  }
+  .tts-divider {
+    width: 1px; height: 18px; background: #e0d0c0; margin: 0 2px;
+  }
+  .tts-btn {
+    background: none; border: 1px solid #e8d5c0; border-radius: 50%;
+    width: 28px; height: 28px; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0; line-height: 1;
+  }
+  .tts-btn:hover { background: #e8d5c0; }
+  .tts-btn:active { transform: scale(0.9); }
+
+  .letter-stamp {
+    position: absolute; top: -8px; right: 16px;
+    font-size: 36px; opacity: 0.6; transform: rotate(12deg);
+  }
+  .letter-header { margin-bottom: 16px; }
+  .letter-greeting { font-size: 17px; font-weight: 700; color: #5d4037; display: block; margin-bottom: 4px; }
+  .letter-week { font-size: 12px; color: #b8956e; }
+  .letter-body { font-size: 15px; line-height: 1.9; color: #3e2723; white-space: pre-wrap; }
+  .letter-body p { margin-bottom: 10px; }
+  .letter-placeholder { color: #b8956e; font-style: italic; font-size: 14px; }
+  .letter-signature {
+    margin-top: 20px; text-align: right; font-size: 14px;
+    color: #8d6e4a; font-style: italic; letter-spacing: 1px;
+  }
+  .letter-gen-btn {
+    width: 100%; padding: 12px; border: 2px solid #e17055; border-radius: 12px;
+    background: none; color: #e17055; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; margin-top: 4px;
+  }
+  .letter-gen-btn:hover { background: #e17055; color: #fff; }
+  .letter-gen-btn:disabled { opacity: 0.4; cursor: not-allowed; background: none; color: #e17055; }
+  .letter-style-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .letter-style-body { background: var(--card); border-radius: 12px; padding: 14px; margin-top: 8px; }
+  .style-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+  .style-input {
+    width: 100%; border: 2px solid var(--border); border-radius: 10px;
+    padding: 10px; font-size: 13px; font-family: inherit; resize: vertical;
+    outline: none; box-sizing: border-box; transition: border-color 0.2s;
+  }
+  .style-input:focus { border-color: #e17055; }
+  .style-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .style-save-btn, .style-auto-btn {
+    flex: 1; padding: 8px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; border: 2px solid #e17055;
+  }
+  .style-save-btn { background: #e17055; color: #fff; border: 2px solid #e17055; }
+  .style-save-btn:hover { background: #d06045; }
+  .style-auto-btn { background: none; color: #e17055; }
+  .style-auto-btn:hover { background: #fdf0ed; }
+  .style-auto-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .style-status { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+
+  .letter-history { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .back-link { background: none; border: none; color: #e17055; font-size: 13px; cursor: pointer; padding: 4px 0; }
+  .back-link:hover { text-decoration: underline; }
+  .letter-history-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: var(--card); border-radius: 10px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .letter-history-item:hover { border-color: #e17055; transform: translateX(2px); }
+  .letter-history-week { font-size: 13px; font-weight: 600; color: var(--text); }
+  .letter-history-preview { font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+  .letter-history-arrow { color: #ccc; font-size: 16px; }
+  .letter-history-del {
+    background: none; border: none; font-size: 13px; cursor: pointer;
+    opacity: 0.3; transition: opacity 0.2s; padding: 4px; border-radius: 4px;
+  }
+  .letter-history-del:hover { opacity: 1; background: #fee; }
+  .letter-history-empty { font-size: 13px; color: var(--text-secondary); text-align: center; padding: 20px 0; }
+
+  .letter-loading {
+    text-align: center; color: #b8956e; font-size: 14px;
+    padding: 20px 0; font-style: italic;
+  }
+  .letter-loading::after { content: '...'; animation: dots 1.2s infinite; }
+
+  /* --- Warm Forest Full-Page Background --- */
+
+  .forest-bg .sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(170deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--sky-bottom) 100%);
+  }
+
+  /* Warm sun glow */
+  .forest-bg .sun {
+    position: absolute;
+    top: -30px;
+    right: 20%;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, var(--sun-core) 0%, var(--sun-outer) 40%, transparent 70%);
+    border-radius: 50%;
+    animation: sunGlow 5s ease-in-out infinite;
+  }
+  @keyframes sunGlow {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  /* Light rays through trees */
+  .forest-bg .rays {
+    position: absolute;
+    top: -10%;
+    right: 5%;
+    width: 500px;
+    height: 600px;
+    background: linear-gradient(170deg, var(--bokeh-color) 0%, transparent 40%, var(--bokeh-color) 60%, transparent 80%);
+    animation: rayRotate 30s linear infinite;
+    transform-origin: top center;
+  }
+  @keyframes rayRotate {
+    0% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+    100% { transform: rotate(-3deg); }
+  }
+
+  /* Distant hills */
+  .forest-bg .hills {
+    position: absolute;
+    bottom: 25%;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background:
+      radial-gradient(ellipse 70% 100% at 15% 100%, rgba(140,160,110,0.4) 0%, transparent 100%),
+      radial-gradient(ellipse 90% 100% at 45% 100%, rgba(120,150,100,0.35) 0%, transparent 100%),
+      radial-gradient(ellipse 60% 100% at 75% 100%, rgba(150,170,120,0.4) 0%, transparent 100%),
+      radial-gradient(ellipse 40% 100% at 95% 100%, rgba(130,155,105,0.3) 0%, transparent 100%);
+  }
+
+  /* Trees — pine/conifer shapes */
+  .forest-bg .trees {
+    position: absolute;
+    bottom: 6%;
+    left: 0;
+    right: 0;
+    height: 250px;
+  }
+
+  .forest-bg .tree {
+    position: absolute;
+    bottom: 0;
+  }
+
+  .forest-bg .tree .trunk {
+    width: 8px;
+    height: 40px;
+    background: linear-gradient(to top, #5d4037, #795548);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  .forest-bg .tree .foliage {
+    width: 0;
+    height: 0;
+    margin: 0 auto;
+  }
+
+  /* Individual trees with warm-toned greens */
+  .forest-bg .tree.t1 { left: 2%; }
+  .forest-bg .tree.t1 .foliage {
+    border-left: 28px solid transparent;
+    border-right: 28px solid transparent;
+    border-bottom: 65px solid rgba(90,140,80,0.45);
+    transform: translateY(10px);
+  }
+
+  .forest-bg .tree.t2 { left: 10%; }
+  .forest-bg .tree.t2 .foliage {
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 48px solid rgba(100,155,90,0.4);
+    transform: translateY(8px);
+  }
+
+  .forest-bg .tree.t3 { left: 18%; }
+  .forest-bg .tree.t3 .foliage {
+    border-left: 35px solid transparent;
+    border-right: 35px solid transparent;
+    border-bottom: 75px solid rgba(110,160,90,0.35);
+    transform: translateY(12px);
+  }
+
+  .forest-bg .tree.t4 { left: 30%; }
+  .forest-bg .tree.t4 .foliage {
+    border-left: 24px solid transparent;
+    border-right: 24px solid transparent;
+    border-bottom: 58px solid rgba(95,145,80,0.4);
+    transform: translateY(10px);
+  }
+
+  .forest-bg .tree.t5 { left: 44%; }
+  .forest-bg .tree.t5 .foliage {
+    border-left: 40px solid transparent;
+    border-right: 40px solid transparent;
+    border-bottom: 85px solid rgba(105,155,85,0.35);
+    transform: translateY(14px);
+  }
+
+  .forest-bg .tree.t6 { left: 56%; }
+  .forest-bg .tree.t6 .foliage {
+    border-left: 26px solid transparent;
+    border-right: 26px solid transparent;
+    border-bottom: 60px solid rgba(85,135,75,0.4);
+    transform: translateY(10px);
+  }
+
+  .forest-bg .tree.t7 { left: 68%; }
+  .forest-bg .tree.t7 .foliage {
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-bottom: 50px solid rgba(110,160,95,0.4);
+    transform: translateY(6px);
+  }
+
+  .forest-bg .tree.t8 { left: 78%; }
+  .forest-bg .tree.t8 .foliage {
+    border-left: 32px solid transparent;
+    border-right: 32px solid transparent;
+    border-bottom: 70px solid rgba(95,150,85,0.35);
+    transform: translateY(12px);
+  }
+
+  .forest-bg .tree.t9 { left: 90%; }
+  .forest-bg .tree.t9 .foliage {
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 42px solid rgba(100,150,85,0.4);
+    transform: translateY(6px);
+  }
+
+  /* Ground / grass */
+  .forest-bg .ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 8%;
+    background: linear-gradient(to bottom, var(--ground-top), var(--ground-bottom));
+    border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+  }
+
+  /* Tree tint filter */
+  .forest-bg .trees {
+    filter: var(--tree-tint-filter);
+  }
+
+  /* Grass tufts */
+  .forest-bg .grass {
+    position: absolute;
+    bottom: 6%;
+    left: 0;
+    right: 0;
+    height: 30px;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: 20px;
+    opacity: 0.25;
+  }
+
+  /* Warm fireflies */
+  .forest-bg .firefly {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--firefly-color);
+    box-shadow: 0 0 8px 3px var(--firefly-glow);
+    animation: fireflyFloat 6s ease-in-out infinite;
+  }
+  .forest-bg .firefly:nth-child(1) { top: 30%; left: 10%; animation-delay: 0s; animation-duration: 5s; }
+  .forest-bg .firefly:nth-child(2) { top: 45%; left: 85%; animation-delay: 1s; animation-duration: 7s; }
+  .forest-bg .firefly:nth-child(3) { top: 25%; left: 55%; animation-delay: 2s; animation-duration: 6s; width: 4px; height: 4px; }
+  .forest-bg .firefly:nth-child(4) { top: 55%; left: 30%; animation-delay: 0.5s; animation-duration: 5.5s; }
+  .forest-bg .firefly:nth-child(5) { top: 35%; left: 70%; animation-delay: 3s; animation-duration: 6.5s; width: 5px; height: 5px; }
+  .forest-bg .firefly:nth-child(6) { top: 60%; left: 50%; animation-delay: 1.5s; animation-duration: 7.5s; }
+
+  @keyframes fireflyFloat {
+    0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+    25% { transform: translate(8px, -15px); opacity: 0.8; }
+    50% { transform: translate(-5px, -8px); opacity: 0.5; }
+    75% { transform: translate(12px, -20px); opacity: 0.9; }
+  }
+
+  /* ===== Character in Forest ===== */
+  .forest-bg .character-scene {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 120px;
+    z-index: 2;
+    animation: characterBob 3s ease-in-out infinite;
+  }
+
+  .forest-bg .character-scene img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15)) var(--char-filter);
+  }
+
+  @keyframes characterBob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+  }
+
+  /* Flowers scattered on ground */
+  .forest-bg .flower {
+    position: absolute;
+    font-size: 16px;
+    opacity: 0.5;
+    animation: flowerSway 3s ease-in-out infinite;
+  }
+  .forest-bg .flower:nth-child(1) { bottom: 10%; left: 8%; animation-delay: 0s; font-size: 18px; }
+  .forest-bg .flower:nth-child(2) { bottom: 12%; left: 22%; animation-delay: 0.5s; font-size: 14px; }
+  .forest-bg .flower:nth-child(3) { bottom: 9%; left: 38%; animation-delay: 1s; }
+  .forest-bg .flower:nth-child(4) { bottom: 11%; left: 55%; animation-delay: 1.5s; font-size: 15px; }
+  .forest-bg .flower:nth-child(5) { bottom: 10%; left: 70%; animation-delay: 0.3s; font-size: 17px; }
+  .forest-bg .flower:nth-child(6) { bottom: 13%; left: 82%; animation-delay: 0.8s; font-size: 13px; }
+  .forest-bg .flower:nth-child(7) { bottom: 8%; left: 92%; animation-delay: 2s; }
+
+  @keyframes flowerSway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  /* Mushrooms */
+  .forest-bg .mushroom {
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.4;
+  }
+  .forest-bg .mushroom:nth-child(1) { bottom: 9%; left: 15%; font-size: 20px; }
+  .forest-bg .mushroom:nth-child(2) { bottom: 8%; left: 65%; font-size: 16px; }
+  .forest-bg .mushroom:nth-child(3) { bottom: 11%; left: 45%; font-size: 14px; }
+
+  /* Bokeh light particles */
+  .forest-bg .bokeh-light {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--bokeh-color);
+    animation: bokehPulse 4s ease-in-out infinite;
+  }
+  .forest-bg .bokeh-light:nth-child(1) { width: 60px; height: 60px; top: 15%; left: 5%; animation-delay: 0s; }
+  .forest-bg .bokeh-light:nth-child(2) { width: 90px; height: 90px; top: 40%; right: 5%; animation-delay: 1s; }
+  .forest-bg .bokeh-light:nth-child(3) { width: 40px; height: 40px; top: 25%; left: 45%; animation-delay: 2s; }
+  .forest-bg .bokeh-light:nth-child(4) { width: 70px; height: 70px; bottom: 30%; left: 75%; animation-delay: 0.5s; }
+
+  @keyframes bokehPulse {
+    0%, 100% { transform: scale(1); opacity: 0.15; }
+    50% { transform: scale(1.4); opacity: 0.3; }
+  }
+
+  /* ===== Scene-Specific Decorations ===== */
+
+  /* Rain drops (rainy/stormy) */
+  .forest-bg .raindrop {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, rgba(150,190,230,0.5));
+    animation: rainFall linear infinite;
+    pointer-events: none;
+    z-index: 2;
+  }
+  @keyframes rainFall {
+    0% { transform: translateY(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  /* Lightning flash (stormy) */
+  .forest-bg .lightning {
+    position: absolute;
+    inset: 0;
+    background: rgba(200,180,255,0.12);
+    animation: lightningFlash 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 3;
+  }
+  @keyframes lightningFlash {
+    0%, 92%, 94%, 96%, 100% { opacity: 0; }
+    93% { opacity: 1; }
+    95% { opacity: 0.5; }
+  }
+
+  /* Stars (calm) */
+  .forest-bg .star {
+    position: absolute;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    animation: starTwinkle 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.5); }
+  }
+
+  /* Butterflies (sunny/mixed) */
+  .forest-bg .butterfly {
+    position: absolute;
+    font-size: 20px;
+    opacity: 0.5;
+    animation: butterflyFloat 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes butterflyFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(15px, -20px) rotate(5deg); }
+    50% { transform: translate(-10px, -10px) rotate(-3deg); }
+    75% { transform: translate(20px, -25px) rotate(4deg); }
+  }
+
+  /* Rainbow ground shimmer (mixed) */
+  body.scene-mixed .forest-bg .ground::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+      rgba(255,0,0,0.08), rgba(255,165,0,0.08), rgba(255,255,0,0.08),
+      rgba(0,128,0,0.08), rgba(0,0,255,0.08), rgba(128,0,128,0.08));
+    animation: rainbowShift 10s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes rainbowShift {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+  }
+
+  /* --- Glass form elements --- */
+  .emotion-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+
+  .emotion-card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,255,255,0.45);
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .emotion-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .emotion-card.selected {
+    border-color: var(--primary);
+    background: rgba(108,92,231,0.15);
+    box-shadow: 0 4px 16px rgba(108,92,231,0.15);
+  }
+  .emotion-card .emoji { font-size: 28px; display: block; margin-bottom: 6px; }
+  .emotion-card .label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+  .note-input {
+    width: 100%; min-height: 100px;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,255,255,0.45);
+    border-radius: 16px; padding: 14px;
+    font-size: 14px; resize: none; font-family: inherit; outline: none;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .note-input:focus { border-color: var(--primary); box-shadow: 0 4px 20px rgba(108,92,231,0.12); }
+  .note-input::placeholder { color: #aaa; }
+
+  .submit-btn {
+    width: 100%; padding: 14px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff; font-size: 16px; font-weight: 600;
+    cursor: pointer; margin-top: 16px;
+    box-shadow: 0 4px 16px rgba(108,92,231,0.2);
+  }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .submit-btn:active:not(:disabled) { transform: scale(0.98); }
+
+  /* --- History --- */
+  .empty-state { text-align: center; padding: 40px 16px; color: var(--text-secondary); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  .history-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .history-item {
+    background: var(--card); border-radius: 12px; padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative;
+  }
+
+  .history-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .history-emoji { font-size: 24px; }
+  .history-emotion-name { font-size: 14px; font-weight: 600; }
+  .history-time { margin-left: auto; font-size: 12px; color: var(--text-secondary); }
+  .history-note { font-size: 13px; color: #555; line-height: 1.6; white-space: pre-wrap; }
+
+  .delete-btn {
+    position: absolute; top: 10px; right: 10px; background: none;
+    border: none; color: #ccc; font-size: 18px; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px; transition: all 0.2s;
+  }
+  .delete-btn:hover { background: #fee; color: #e74c3c; }
+
+  /* --- Stats --- */
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+
+  .stat-card {
+    background: var(--card); border-radius: 12px; padding: 16px; text-align: center;
+  }
+  .stat-number { font-size: 28px; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+  .chart-bar-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .chart-emoji { font-size: 18px; width: 28px; text-align: center; }
+  .chart-bar-bg {
+    flex: 1; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden;
+  }
+  .chart-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+  .chart-count { font-size: 12px; color: var(--text-secondary); width: 24px; text-align: right; }
+
+  .clear-btn {
+    width: 100%; padding: 12px; border: 2px solid #e74c3c; border-radius: 12px;
+    background: none; color: #e74c3c; font-size: 14px; cursor: pointer;
+    margin-top: 20px; transition: all 0.2s;
+  }
+  .clear-btn:active { background: #fee; }
+
+  /* Ambient sound toggle */
+  .ambient-btn {
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    padding: 4px 6px; line-height: 1; transition: transform 0.2s;
+    display: flex; align-items: center;
+  }
+  .ambient-btn:active { transform: scale(0.85); }
+  .ambient-btn.playing { animation: ambient-pulse 2s infinite; }
+  @keyframes ambient-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 10px 24px; border-radius: 20px;
+    font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body class="scene-default">
+
+<header id="header-back" class="scene-default">
+  <div class="scene-deco" id="scene-deco"></div>
+  <div class="scene-content">
+    <div class="header-title-row">
+      <div class="header-avatar" data-tab="profile" id="header-avatar">
+        <img src="assets/icon.svg" alt="avatar" />
+      </div>
+      <h1>情绪日记</h1>
+      <div class="envelope-badge" data-tab="letter" id="envelope-badge">
+        <span class="env-body">✉️</span>
+        <span class="env-sticker">💌</span>
+        <span class="env-status" id="env-status"></span>
+      </div>
+      <button class="ambient-btn" id="ambient-toggle" title="森林环境音">🎵</button>
+    </div>
+    <p class="header-subtitle">记录每一天的感受</p>
+    <div class="header-mood-summary" id="mood-summary"></div>
+  </div>
+</header>
+
+<div class="forest-bg">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="rays"></div>
+  <div class="hills"></div>
+  <div class="trees">
+    <div class="tree t1"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t2"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t3"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t4"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t5"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t6"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t7"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t8"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree t9"><div class="foliage"></div><div class="trunk"></div></div>
+  </div>
+  <div class="ground"></div>
+
+  <!-- Fireflies -->
+  <div class="firefly"></div>
+  <div class="firefly"></div>
+  <div class="firefly"></div>
+  <div class="firefly"></div>
+  <div class="firefly"></div>
+  <div class="firefly"></div>
+
+  <!-- Flowers -->
+  <span class="flower">🌷</span>
+  <span class="flower">🌼</span>
+  <span class="flower">🌸</span>
+  <span class="flower">🌻</span>
+  <span class="flower">🌺</span>
+  <span class="flower">🌷</span>
+  <span class="flower">🌼</span>
+
+  <!-- Mushrooms -->
+  <span class="mushroom">🍄</span>
+  <span class="mushroom">🍄</span>
+  <span class="mushroom">🍄</span>
+
+  <!-- Bokeh light particles -->
+  <div class="bokeh-light"></div>
+  <div class="bokeh-light"></div>
+  <div class="bokeh-light"></div>
+  <div class="bokeh-light"></div>
+
+  <!-- Cute Character -->
+  <div class="character-scene" id="scene-character" data-tab="profile">
+    <img src="assets/icon.svg" alt="小精灵" />
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== Home Panel ===== -->
+  <div class="tab-panel active" id="panel-home">
+    <div class="home-grid">
+      <div class="home-card record" data-tab="record">
+        <span class="icon">📝</span>
+        <div class="title">记录心情</div>
+        <div class="desc">写下此刻的感受</div>
+        <div class="preview" id="preview-record">今天还没有记录</div>
+      </div>
+      <div class="home-card history" data-tab="history">
+        <span class="icon">📋</span>
+        <div class="title">历史记录</div>
+        <div class="desc">回顾每一天</div>
+        <div class="badge" id="badge-today"></div>
+        <div class="preview" id="preview-history">查看历史记录</div>
+      </div>
+      <div class="home-card chat" data-tab="chat">
+        <span class="icon">🌿</span>
+        <div class="title">聊养院</div>
+        <div class="desc">在聊天中疗愈自己</div>
+        <div class="badge" id="badge-chat"></div>
+        <div class="preview" id="preview-chat">来聊养院坐坐</div>
+      </div>
+      <div class="home-card stats" data-tab="stats">
+        <span class="icon">📊</span>
+        <div class="title">情绪统计</div>
+        <div class="desc">了解你的情绪趋势</div>
+        <div class="preview" id="preview-stats">查看统计数据</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Record Panel ===== -->
+  <div class="tab-panel" id="panel-record">
+    <div class="panel-header">
+      <button class="back-btn" data-tab="home">←</button>
+      <span class="panel-title">📝 记录心情</span>
+    </div>
+    <div class="section-title">此刻你的感受是？</div>
+    <div class="emotion-grid" id="emotion-grid"></div>
+    <div class="section-title" style="margin-top:8px">写点什么...</div>
+    <textarea class="note-input" id="note-input" placeholder="记录一下今天发生了什么，或者你的感受..."></textarea>
+    <button class="submit-btn" id="submit-btn" disabled>保存记录</button>
+  </div>
+
+  <!-- ===== History Panel ===== -->
+  <div class="tab-panel" id="panel-history">
+    <div class="panel-header">
+      <button class="back-btn" data-tab="home">←</button>
+      <span class="panel-title">📋 历史记录</span>
+    </div>
+    <div id="history-container"></div>
+  </div>
+
+  <!-- ===== Chat Panel: 聊养院 ===== -->
+  <div class="tab-panel" id="panel-chat">
+    <div class="panel-header">
+      <button class="back-btn" data-tab="home">←</button>
+      <span class="panel-title">🌿 聊养院</span>
+    </div>
+    <div class="chat-container">
+      <div class="chat-header">
+        <span class="chat-avatar">🌱</span>
+        <div class="chat-info">
+          <h3>聊养院</h3>
+          <p>一院草木，半盏清谈</p>
+        </div>
+        <span class="chat-status" id="chat-status">检查中...</span>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-hints">
+        <button class="hint-btn" data-hint="最近心里有些话想说">心里话</button>
+        <button class="hint-btn" data-hint="我今天遇到了一件开心的事">开心的事</button>
+        <button class="hint-btn" data-hint="我好像被困住了走不出来">被困住了</button>
+        <button class="hint-btn" data-hint="想找人说说话">想聊聊</button>
+      </div>
+      <div class="chat-input-bar">
+        <input class="chat-input" id="chat-input" placeholder="在这里倾诉你的心事..." autocomplete="off" />
+        <button class="chat-send" id="chat-send">发送</button>
+      </div>
+    </div>
+    <button class="clear-chat-btn" id="clear-chat-btn">清空聊天记录</button>
+  </div>
+
+  <!-- ===== Stats Panel ===== -->
+  <div class="tab-panel" id="panel-stats">
+    <div class="panel-header">
+      <button class="back-btn" data-tab="home">←</button>
+      <span class="panel-title">📊 情绪统计</span>
+    </div>
+    <div class="stats-grid" id="stats-summary"></div>
+    <div class="section-title">情绪分布</div>
+    <div id="chart-container"></div>
+    <div class="section-title">📈 情绪趋势</div>
+    <div class="trend-chart-container">
+      <canvas id="trend-chart"></canvas>
+    </div>
+    <div class="section-title">🗓️ 情绪月历</div>
+    <div class="mood-calendar" id="mood-calendar">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="cal-prev">‹</button>
+        <span class="cal-month" id="cal-month"></span>
+        <button class="cal-nav-btn" id="cal-next">›</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend" id="cal-legend"></div>
+    </div>
+  </div>
+
+  <!-- ===== Profile Panel ===== -->
+  <div class="tab-panel" id="panel-profile">
+    <div class="panel-header">
+      <button class="back-btn" data-tab="home">←</button>
+      <span class="panel-title">👤 我的档案</span>
+    </div>
+    <div class="profile-container" id="profile-container">
+      <div class="profile-avatar-row">
+        <div class="profile-avatar" id="profile-avatar">
+          <img src="assets/icon.svg" alt="avatar" />
+        </div>
+        <img class="profile-character-buddy" src="assets/character.svg" alt="哲人" />
+      </div>
+      <div class="profile-know-yourself">认识你自己</div>
+      <button class="profile-change-avatar" id="change-avatar-btn">📷 更换头像</button>
+      <input type="file" accept="image/*" style="display:none" id="avatar-file-input" />
+      <div class="profile-card" id="profile-card">
+        <div class="profile-loading" id="profile-loading">
+          <p>🔍 正在分析你的数据...</p>
+          <p class="profile-loading-sub">聊养院正在根据你的情绪记录和聊天了解你</p>
+        </div>
+        <div class="profile-content" id="profile-content" style="display:none">
+          <div class="profile-section">
+            <div class="profile-section-title">🧠 性格特征</div>
+            <div class="profile-badges" id="profile-traits"></div>
+          </div>
+          <div class="profile-section">
+            <div class="profile-section-title">🏷️ MBTI</div>
+            <div class="profile-mbti" id="profile-mbti"></div>
+          </div>
+          <div class="profile-section">
+            <div class="profile-section-title">🎯 近况</div>
+            <p class="profile-text" id="profile-status"></p>
+          </div>
+          <div class="profile-section">
+            <div class="profile-section-title">💡 兴趣爱好</div>
+            <div class="profile-badges" id="profile-hobbies"></div>
+          </div>
+          <div class="profile-section">
+            <div class="profile-section-title">📝 聊养院寄语</div>
+            <p class="profile-text profile-message" id="profile-message"></p>
+          </div>
+        </div>
+      </div>
+      <button class="profile-refresh-btn" id="profile-refresh">🔄 刷新档案</button>
+      <button class="clear-btn" id="clear-btn" style="margin-top:4px">🗑️ 清空所有记录</button>
+      <div class="profile-meta" id="profile-meta"></div>
+    </div>
+  </div>
+
+  <!-- ===== Letter Panel ===== -->
+  <div class="tab-panel" id="panel-letter">
+    <div class="panel-header">
+      <button class="back-btn" data-tab="home">←</button>
+      <span class="panel-title">✉️ 本周来信</span>
+    </div>
+    <div class="letter-container" id="letter-container">
+      <div class="letter-paper">
+        <div class="letter-stamp">🌿</div>
+        <div class="letter-tts-bar" id="letter-tts-bar" style="display:none">
+          <button class="tts-voice-btn" data-voice="girl" id="tts-voice-girl" title="少女声音 🦉">🦉</button>
+          <button class="tts-voice-btn" data-voice="male" id="tts-voice-male" title="男声 🦝">🦝</button>
+          <button class="tts-voice-btn" data-voice="browser" id="tts-voice-browser" title="浏览器语音">🔉</button>
+          <span class="tts-divider"></span>
+          <button class="tts-btn" id="tts-pause" style="display:none">⏸</button>
+          <button class="tts-btn" id="tts-stop" style="display:none">⏹</button>
+        </div>
+        <div class="letter-header">
+          <span class="letter-greeting" id="letter-greeting">亲爱的你：</span>
+          <span class="letter-week" id="letter-week"></span>
+        </div>
+        <div class="letter-body" id="letter-body">
+          <p class="letter-placeholder">🌱 每周日晚上，聊养院会结合你这一周的情绪记录与聊天，为你写一封温暖的信。</p>
+          <p class="letter-placeholder">当周日的钟声敲响，信就会出现在这里。</p>
+        </div>
+        <div class="letter-signature" id="letter-signature">—— 聊养院</div>
+        <button class="back-link" id="letter-back-current" style="display:none;margin-top:12px">← 返回本周</button>
+      </div>
+      <button class="letter-gen-btn" id="letter-gen-btn">📮 生成本周来信</button>
+    </div>
+    <div class="letter-history" id="letter-history">
+      <div class="section-title">📜 历史信件</div>
+      <div class="letter-history-list" id="letter-history-list"></div>
+    </div>
+    <div class="letter-style-section">
+      <div class="section-title" style="cursor:pointer" id="style-toggle">✍️ 写作风格 <span id="style-toggle-icon">▶</span></div>
+      <div class="letter-style-body" id="letter-style-body" style="display:none">
+        <p class="style-desc">可以指定你喜欢的作家、书籍，让信件模仿他们的文风。</p>
+        <textarea class="style-input" id="style-input" placeholder="例如：村上春树、小王子、诗经、卡尔维诺、哲学随笔风格…" rows="3"></textarea>
+        <div class="style-actions">
+          <button class="style-save-btn" id="style-save-btn">保存风格</button>
+          <button class="style-auto-btn" id="style-auto-btn">🎯 自动匹配</button>
+        </div>
+        <div class="style-status" id="style-status"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== Day Detail Modal ===== -->
+<div class="day-modal-overlay" id="day-modal">
+  <div class="day-modal">
+    <div class="day-modal-header">
+      <span class="day-modal-date" id="day-modal-date"></span>
+      <button class="day-modal-close" id="day-modal-close">&times;</button>
+    </div>
+    <div class="day-modal-body" id="day-modal-body"></div>
+  </div>
+</div>
+
+<audio id="ambient-audio" preload="auto" loop
+  src="https://bigsoundbank.com/UPLOAD/mp3/2749.mp3"></audio>
+
+<script>
+const EMOTIONS = [
+  { key: 'happy',    emoji: '😊', label: '开心', color: '#fdcb6e' },
+  { key: 'calm',     emoji: '😌', label: '平静', color: '#81ecec' },
+  { key: 'excited',  emoji: '🤩', label: '兴奋', color: '#ff7675' },
+  { key: 'sad',      emoji: '😢', label: '难过', color: '#74b9ff' },
+  { key: 'angry',    emoji: '😠', label: '生气', color: '#e17055' },
+  { key: 'anxious',  emoji: '😰', label: '焦虑', color: '#a29bfe' },
+  { key: 'tired',    emoji: '😫', label: '疲惫', color: '#b2bec3' },
+  { key: 'grateful', emoji: '🥰', label: '感恩', color: '#fd79a8' },
+  { key: 'confused', emoji: '😕', label: '困惑', color: '#dfe6e9' },
+];
+
+const SCENES = {
+  sunny: {
+    className: 'scene-sunny',
+    emojis: ['☀️', '✨', '🌈', '🌸', '🦋'],
+    message: '心情灿烂的一周 ☀️'
+  },
+  calm: {
+    className: 'scene-calm',
+    emojis: ['🌊', '🍃', '🌿', '🕊️', '🌙'],
+    message: '平静祥和的一周 🌊'
+  },
+  rainy: {
+    className: 'scene-rainy',
+    emojis: ['☁️', '🌧️', '🌈', '🍵', '📖'],
+    message: '虽然有点阴雨，但总会放晴的 🌈'
+  },
+  stormy: {
+    className: 'scene-stormy',
+    emojis: ['⚡', '🌪️', '🔥', '🌿', '💪'],
+    message: '情绪起伏的一周，记得照顾好自己 🌿'
+  },
+  mixed: {
+    className: 'scene-mixed',
+    emojis: ['🎨', '🌈', '✨', '💫', '🌟'],
+    message: '丰富多彩的一周 🎨'
+  },
+  default: {
+    className: 'scene-default',
+    emojis: ['🌱', '🌻', '🌸', '🌿', '✨'],
+    message: '开始记录你的心情吧 🌱'
+  }
+};
+
+let selectedEmotion = null;
+
+function getRecords() {
+  try {
+    return JSON.parse(localStorage.getItem('mood_records') || '[]');
+  } catch { return []; }
+}
+
+function saveRecords(records) {
+  localStorage.setItem('mood_records', JSON.stringify(records));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+// ===== Mood Scene Analysis =====
+function analyzeWeekMood() {
+  const records = getRecords();
+  if (records.length === 0) return SCENES.default;
+
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const weekRecords = records.filter(r => r.timestamp >= weekAgo);
+
+  if (weekRecords.length === 0) return SCENES.default;
+
+  const counts = {};
+  weekRecords.forEach(r => { counts[r.key] = (counts[r.key] || 0) + 1; });
+  const total = weekRecords.length;
+
+  // Group into categories
+  const positive = (counts['happy'] || 0) + (counts['excited'] || 0) + (counts['grateful'] || 0);
+  const negative = (counts['sad'] || 0) + (counts['angry'] || 0) + (counts['anxious'] || 0) + (counts['tired'] || 0);
+  const calm = counts['calm'] || 0;
+  const confused = counts['confused'] || 0;
+
+  const pctPositive = positive / total;
+  const pctNegative = negative / total;
+  const pctCalm = calm / total;
+
+  // Find the single most frequent emotion
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const topKey = sorted[0][0];
+  const topPct = sorted[0][1] / total;
+
+  if (topPct >= 0.4) {
+    if (['happy', 'excited', 'grateful'].includes(topKey)) return SCENES.sunny;
+    if (topKey === 'calm') return SCENES.calm;
+    if (['sad', 'tired'].includes(topKey)) return SCENES.rainy;
+    if (['angry', 'anxious'].includes(topKey)) return SCENES.stormy;
+  }
+
+  if (pctPositive >= 0.5) return SCENES.sunny;
+  if (pctCalm >= 0.4) return SCENES.calm;
+  if (pctNegative >= 0.5) {
+    return (counts['angry'] || 0) + (counts['anxious'] || 0) >=
+           (counts['sad'] || 0) + (counts['tired'] || 0)
+      ? SCENES.stormy : SCENES.rainy;
+  }
+
+  return SCENES.mixed;
+}
+
+function applyMoodScene() {
+  const body = document.body;
+  const header = document.getElementById('header-back');
+  const deco = document.getElementById('scene-deco');
+  const summary = document.getElementById('mood-summary');
+  const forestBg = document.querySelector('.forest-bg');
+
+  // Remove all scene classes from body and header
+  Object.values(SCENES).forEach(s => {
+    body.classList.remove(s.className);
+    header.classList.remove(s.className);
+  });
+
+  const scene = analyzeWeekMood();
+
+  // Apply to both body and header
+  body.classList.add(scene.className);
+  header.classList.add(scene.className);
+
+  // Build decorations
+  deco.innerHTML = '';
+  scene.emojis.forEach((emoji, i) => {
+    const el = document.createElement('span');
+    el.className = 'float-item';
+    el.textContent = emoji;
+    el.style.animationDelay = `${i * 0.7}s`;
+    const positions = [
+      { top: '8%', left: '5%' },
+      { top: '65%', left: '88%' },
+      { top: '15%', left: '80%' },
+      { top: '72%', left: '10%' },
+      { top: '40%', left: '48%' },
+    ];
+    Object.assign(el.style, positions[i] || { top: '50%', left: '50%' });
+    deco.appendChild(el);
+  });
+
+  // Bokeh circles
+  for (let i = 0; i < 3; i++) {
+    const b = document.createElement('div');
+    b.className = 'bokeh';
+    deco.appendChild(b);
+  }
+
+  summary.textContent = scene.message;
+
+  // Update forest decorations
+  updateForestDecorations(scene.className, forestBg);
+}
+
+// ===== Scene-specific forest decorations =====
+function updateForestDecorations(sceneClass, forestBg) {
+  // Remove existing dynamic decorations
+  forestBg.querySelectorAll('.raindrop, .lightning, .star, .butterfly')
+    .forEach(el => el.remove());
+
+  switch (sceneClass) {
+    case 'scene-rainy':
+      addRainDrops(forestBg, 50);
+      break;
+    case 'scene-stormy':
+      addLightning(forestBg);
+      addRainDrops(forestBg, 20);
+      break;
+    case 'scene-calm':
+      addStars(forestBg, 15);
+      break;
+    case 'scene-sunny':
+      addButterflies(forestBg, 3);
+      break;
+    case 'scene-mixed':
+      addButterflies(forestBg, 2);
+      break;
+    // scene-default: no extra decorations
+  }
+}
+
+function addRainDrops(container, count) {
+  for (let i = 0; i < count; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.height = (15 + Math.random() * 20) + 'px';
+    drop.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+    drop.style.animationDelay = (Math.random() * 2) + 's';
+    drop.style.opacity = 0.3 + Math.random() * 0.4;
+    container.appendChild(drop);
+  }
+}
+
+function addLightning(container) {
+  const el = document.createElement('div');
+  el.className = 'lightning';
+  container.appendChild(el);
+}
+
+function addStars(container, count) {
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = (5 + Math.random() * 40) + '%';
+    star.style.animationDelay = (Math.random() * 3) + 's';
+    star.style.animationDuration = (2 + Math.random() * 2) + 's';
+    const size = 2 + Math.random() * 3;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    container.appendChild(star);
+  }
+}
+
+function addButterflies(container, count) {
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'butterfly';
+    el.textContent = '🦋';
+    el.style.left = (15 + Math.random() * 70) + '%';
+    el.style.top = (20 + Math.random() * 30) + '%';
+    el.style.animationDelay = (Math.random() * 4) + 's';
+    container.appendChild(el);
+  }
+}
+
+// ===== Navigation =====
+function navigateTo(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.classList.add('active');
+
+  if (tab === 'history') renderHistory();
+  if (tab === 'stats') renderStats();
+  if (tab === 'chat') { renderChat(); }
+  if (tab === 'letter') { renderLetter(); renderLetterHistory(); }
+  if (tab === 'profile') { renderProfile(); }
+  if (tab === 'home') updateHomePreviews();
+
+  applyMoodScene();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('[data-tab]').forEach(el => {
+  el.addEventListener('click', () => navigateTo(el.dataset.tab));
+});
+
+document.getElementById('header-back').addEventListener('click', (e) => {
+  if (e.target.closest('.envelope-badge') || e.target.closest('.header-avatar')) return;
+  navigateTo('home');
+});
+
+// ===== Home Previews =====
+function updateHomePreviews() {
+  const records = getRecords();
+  const today = new Date().toDateString();
+
+  const todayRecords = records.filter(r => new Date(r.timestamp).toDateString() === today);
+  document.getElementById('preview-record').textContent =
+    todayRecords.length > 0
+      ? `今日已记录 ${todayRecords.length} 条`
+      : '今天还没有记录';
+
+  const badgeToday = document.getElementById('badge-today');
+  if (todayRecords.length > 0) {
+    badgeToday.textContent = todayRecords.length;
+    badgeToday.classList.add('show');
+  } else {
+    badgeToday.classList.remove('show');
+  }
+  document.getElementById('preview-history').textContent =
+    records.length > 0
+      ? `共 ${records.length} 条记录 · 最近: ${records[0].emoji} ${records[0].label}`
+      : '还没有记录';
+
+  const chat = getChatHistory();
+  const unread = chat.filter(m => m.role === 'ai').length;
+  const badgeChat = document.getElementById('badge-chat');
+  if (unread > 0) {
+    badgeChat.textContent = unread;
+    badgeChat.classList.add('show');
+  } else {
+    badgeChat.classList.remove('show');
+  }
+  document.getElementById('preview-chat').textContent =
+    chat.length > 0
+      ? `共 ${chat.length} 条消息`
+      : '来聊养院坐坐';
+
+  document.getElementById('preview-stats').textContent =
+    records.length > 0
+      ? `连续打卡 ${calcStreak(records)} 天`
+      : '查看统计数据';
+
+  const letter = getWeeklyLetter();
+  const envStatus = document.getElementById('env-status');
+  if (letter && letter.content) {
+    envStatus.textContent = '✓';
+    envStatus.classList.add('has-letter');
+  } else {
+    envStatus.textContent = '';
+    envStatus.classList.remove('has-letter');
+  }
+}
+
+// ===== Emotion Grid =====
+const grid = document.getElementById('emotion-grid');
+EMOTIONS.forEach(em => {
+  const div = document.createElement('div');
+  div.className = 'emotion-card';
+  div.dataset.key = em.key;
+  div.innerHTML = `<span class="emoji">${em.emoji}</span><span class="label">${em.label}</span>`;
+  div.addEventListener('click', () => {
+    grid.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+    div.classList.add('selected');
+    selectedEmotion = em;
+    document.getElementById('submit-btn').disabled = false;
+  });
+  grid.appendChild(div);
+});
+
+// ===== Submit =====
+document.getElementById('submit-btn').addEventListener('click', () => {
+  if (!selectedEmotion) return;
+  const records = getRecords();
+  records.unshift({
+    key: selectedEmotion.key,
+    emoji: selectedEmotion.emoji,
+    label: selectedEmotion.label,
+    note: document.getElementById('note-input').value.trim(),
+    timestamp: Date.now(),
+  });
+  saveRecords(records);
+
+  selectedEmotion = null;
+  grid.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('note-input').value = '';
+  document.getElementById('submit-btn').disabled = true;
+
+  showToast('记录成功 ✓');
+  updateHomePreviews();
+});
+
+// ===== History =====
+function renderHistory() {
+  const container = document.getElementById('history-container');
+  const records = getRecords();
+  if (records.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>还没有记录<br>去「记录」页写下你的心情吧</p></div>';
+    return;
+  }
+
+  let html = '<div class="history-list">';
+  records.forEach((r, i) => {
+    html += `<div class="history-item">
+      <button class="delete-btn" data-index="${i}">&times;</button>
+      <div class="history-header">
+        <span class="history-emoji">${r.emoji}</span>
+        <span class="history-emotion-name">${r.label}</span>
+        <span class="history-time">${formatTime(r.timestamp)}</span>
+      </div>`;
+    if (r.note) html += `<div class="history-note">${escapeHtml(r.note)}</div>`;
+    html += '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+
+  container.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.index);
+      const records = getRecords();
+      records.splice(idx, 1);
+      saveRecords(records);
+      renderHistory();
+      updateHomePreviews();
+      showToast('已删除');
+    });
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== Stats =====
+function renderStats() {
+  const records = getRecords();
+  const summaryEl = document.getElementById('stats-summary');
+  const chartEl = document.getElementById('chart-container');
+
+  if (records.length === 0) {
+    summaryEl.innerHTML = '';
+    chartEl.innerHTML = '<div class="empty-state"><div class="icon">📊</div><p>暂无数据</p></div>';
+    return;
+  }
+
+  const today = new Date().toDateString();
+  const todayCount = records.filter(r => new Date(r.timestamp).toDateString() === today).length;
+  const streak = calcStreak(records);
+
+  const counts = {};
+  records.forEach(r => { counts[r.key] = (counts[r.key] || 0) + 1; });
+  const topKey = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  const topEmotion = EMOTIONS.find(e => e.key === topKey);
+
+  summaryEl.innerHTML = `
+    <div class="stat-card"><div class="stat-number">${records.length}</div><div class="stat-label">总记录数</div></div>
+    <div class="stat-card"><div class="stat-number">${todayCount}</div><div class="stat-label">今日记录</div></div>
+    <div class="stat-card"><div class="stat-number">${streak}</div><div class="stat-label">连续天数</div></div>
+    <div class="stat-card"><div class="stat-number">${topEmotion.emoji}</div><div class="stat-label">最常情绪</div></div>
+  `;
+
+  renderMoodCalendar();
+  drawTrendChart('trend-chart', 30);
+
+  const total = records.length;
+  const sorted = EMOTIONS.filter(e => counts[e.key]).sort((a, b) => (counts[b.key] || 0) - (counts[a.key] || 0));
+  let chartHtml = '';
+  sorted.forEach(em => {
+    const c = counts[em.key] || 0;
+    const pct = Math.round((c / total) * 100);
+    chartHtml += `<div class="chart-bar-row">
+      <span class="chart-emoji">${em.emoji}</span>
+      <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${pct}%;background:${em.color}"></div></div>
+      <span class="chart-count">${c}</span>
+    </div>`;
+  });
+  chartEl.innerHTML = chartHtml;
+}
+
+function calcStreak(records) {
+  const days = new Set();
+  records.forEach(r => days.add(formatDate(r.timestamp)));
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (days.has(key)) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+// ===== Mood Calendar =====
+let calDate = new Date();
+
+function renderMoodCalendar() {
+  const records = getRecords();
+  const grid = document.getElementById('cal-grid');
+  const monthEl = document.getElementById('cal-month');
+  const legendEl = document.getElementById('cal-legend');
+
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  const today = new Date();
+  monthEl.textContent = `${year}年${month + 1}月`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+
+  // Build mood map: dateString -> mood record
+  const moodMap = {};
+  records.forEach(r => {
+    const key = formatDate(r.timestamp);
+    if (!moodMap[key] || r.timestamp > moodMap[key].timestamp) {
+      moodMap[key] = r;
+    }
+  });
+
+  let html = '';
+  // Previous month padding
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month"><span class="cal-day-num">${daysInPrev - i}</span></div>`;
+  }
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(year, month, d);
+    const key = formatDate(dateObj.getTime());
+    const mood = moodMap[key];
+    const isToday = dateObj.toDateString() === today.toDateString();
+    const cls = `cal-day${mood ? ' has-mood' : ''}${isToday ? ' today' : ''}`;
+    html += `<div class="${cls}" data-date="${key}">`;
+    if (mood) {
+      html += `<span class="cal-mood-emoji">${mood.emoji}</span>`;
+    }
+    html += `<span class="cal-day-num">${d}</span></div>`;
+  }
+  // Next month padding
+  const totalCells = firstDay + daysInMonth;
+  const remainder = totalCells % 7;
+  if (remainder > 0) {
+    for (let i = 1; i <= 7 - remainder; i++) {
+      html += `<div class="cal-day other-month"><span class="cal-day-num">${i}</span></div>`;
+    }
+  }
+  grid.innerHTML = html;
+
+  // Legend
+  const usedKeys = new Set();
+  records.forEach(r => usedKeys.add(r.key));
+  const usedEmotions = EMOTIONS.filter(e => usedKeys.has(e.key));
+  legendEl.innerHTML = usedEmotions.map(e =>
+    `<span class="cal-legend-item"><span class="dot" style="background:${e.color}"></span>${e.emoji} ${e.label}</span>`
+  ).join('');
+}
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calDate.setMonth(calDate.getMonth() - 1);
+  renderMoodCalendar();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calDate.setMonth(calDate.getMonth() + 1);
+  renderMoodCalendar();
+});
+
+// Calendar day click → show detail
+window.addEventListener('resize', () => {
+  const panel = document.getElementById('panel-stats');
+  if (panel && panel.classList.contains('active')) drawTrendChart('trend-chart', 30);
+});
+
+document.getElementById('cal-grid').addEventListener('click', (e) => {
+  const dayEl = e.target.closest('.cal-day.has-mood');
+  if (!dayEl) return;
+  const dateStr = dayEl.dataset.date;
+  const records = getRecords().filter(r => formatDate(r.timestamp) === dateStr);
+  if (records.length === 0) return;
+  document.getElementById('day-modal-date').textContent = dateStr;
+  const body = document.getElementById('day-modal-body');
+  body.innerHTML = records.map(r => `
+    <div class="day-modal-record">
+      <span class="dm-emoji">${r.emoji}</span>
+      <div class="dm-info">
+        <div class="dm-label">${r.label}</div>
+        ${r.note ? `<div class="dm-note">${escapeHtml(r.note)}</div>` : ''}
+      </div>
+      <span class="dm-time">${formatTime(r.timestamp)}</span>
+    </div>
+  `).join('');
+  document.getElementById('day-modal').classList.add('show');
+});
+document.getElementById('day-modal-close').addEventListener('click', () => {
+  document.getElementById('day-modal').classList.remove('show');
+});
+document.getElementById('day-modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    document.getElementById('day-modal').classList.remove('show');
+  }
+});
+
+// ===== Mood Trend Line Chart =====
+const MOOD_SCORES = {
+  happy: 100, excited: 90, grateful: 85,
+  calm: 70,
+  confused: 45,
+  tired: 30, sad: 20, anxious: 15, angry: 10
+};
+const MOOD_COLORS = {
+  happy: '#fdcb6e', excited: '#ff7675', grateful: '#fd79a8',
+  calm: '#81ecec',
+  confused: '#dfe6e9',
+  tired: '#b2bec3', sad: '#74b9ff', anxious: '#a29bfe', angry: '#e17055'
+};
+
+function computeDailyScores(records, days) {
+  const scores = [];
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = formatDate(d.getTime());
+    const dayRecords = records.filter(r => formatDate(r.timestamp) === key);
+    if (dayRecords.length > 0) {
+      const avg = dayRecords.reduce((sum, r) => sum + (MOOD_SCORES[r.key] || 50), 0) / dayRecords.length;
+      scores.push({ date: key, score: Math.round(avg), count: dayRecords.length, records: dayRecords });
+    } else {
+      scores.push({ date: key, score: null, count: 0, records: [] });
+    }
+  }
+  return scores;
+}
+
+function drawTrendChart(canvasId, days = 30) {
+  const canvas = document.getElementById(canvasId);
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = rect.width - 24;
+  const h = 160;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const records = getRecords();
+  if (records.length < 2) {
+    ctx.fillStyle = '#bbb';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('再多记录几天就能看到情绪趋势啦 🌱', w / 2, h / 2);
+    return;
+  }
+
+  const data = computeDailyScores(records, days);
+  const pad = { top: 20, bottom: 24, left: 4, right: 4 };
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top - pad.bottom;
+
+  const validData = data.filter(d => d.score !== null);
+  if (validData.length === 0) return;
+  const minScore = 0;
+  const maxScore = 100;
+  const xStep = chartW / (data.length - 1 || 1);
+
+  // Helper: data → canvas coords
+  const toX = (i) => pad.left + (i / (data.length - 1)) * chartW;
+  const toY = (v) => pad.top + chartH - ((v - minScore) / (maxScore - minScore)) * chartH;
+
+  // Draw grid lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  for (let v = 20; v <= 80; v += 20) {
+    const y = toY(v);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#ccc'; ctx.font = '9px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(v, pad.left - 2, y + 3);
+  }
+
+  // Fill area under line (gradient)
+  const gradient = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH);
+  gradient.addColorStop(0, 'rgba(108,92,231,0.25)');
+  gradient.addColorStop(1, 'rgba(108,92,231,0.02)');
+  ctx.beginPath();
+  let firstValid = -1;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].score === null) continue;
+    if (firstValid < 0) { firstValid = i; ctx.moveTo(toX(i), toY(data[i].score)); }
+    else ctx.lineTo(toX(i), toY(data[i].score));
+  }
+  if (firstValid >= 0) {
+    const lastValid = data.length - 1 - [...data].reverse().findIndex(d => d.score !== null);
+    ctx.lineTo(toX(lastValid), toY(minScore));
+    ctx.lineTo(toX(firstValid), toY(minScore));
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+  }
+
+  // Draw line
+  ctx.beginPath();
+  ctx.strokeStyle = '#6c5ce7';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  let started = false;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].score === null) continue;
+    if (!started) { ctx.moveTo(toX(i), toY(data[i].score)); started = true; }
+    else ctx.lineTo(toX(i), toY(data[i].score));
+  }
+  ctx.stroke();
+
+  // Draw dots & labels
+  const today = new Date();
+  data.forEach((d, i) => {
+    if (d.score === null) return;
+    const x = toX(i);
+    const y = toY(d.score);
+
+    // Dot
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#6c5ce7';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Date label (every 7 days)
+    const dateObj = new Date(today);
+    dateObj.setDate(dateObj.getDate() - (data.length - 1 - i));
+    if (i === 0 || i === data.length - 1 || dateObj.getDate() === 1 || (i > 0 && i % 7 === 0)) {
+      const monthDay = `${dateObj.getMonth()+1}/${dateObj.getDate()}`;
+      ctx.fillStyle = '#999';
+      ctx.font = '9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(monthDay, x, h - 6);
+    }
+  });
+}
+
+// ===== Clear all =====
+document.getElementById('clear-btn').addEventListener('click', () => {
+  if (confirm('确定要清空所有记录吗？此操作不可恢复。')) {
+    localStorage.removeItem('mood_records');
+    navigateTo('home');
+    showToast('已清空所有记录');
+  }
+});
+
+// ===== Chat =====
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+const chatStatus = document.getElementById('chat-status');
+
+// ============ AI 配置 ============
+const AI_API_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+const AI_API_KEY = 'sk-919bb64580754e5d8f0cf0259080939d';
+const AI_MODEL = 'qwen-plus';
+const SYSTEM_PROMPT = `你是林间聊愈室（聊养院）的AI聊愈伙伴。
+
+【世界观设定】
+场景坐落在静谧森林中的一座小木屋里。窗外有松叶沙沙摇曳、溪流潺潺低语、微风穿过树梢的白噪音，壁炉里燃着温暖的橘光。整个氛围松弛、安全、与世隔绝。你是住在这里的一只灵动小动物，柔软、温暖、善解人意。
+
+【角色定位】
+情绪陪伴与梳理伙伴。你不是专业心理医生，不做临床诊断或治疗。你的存在就是倾听、共情，陪用户慢慢看清自己心里的东西。
+
+【核心对话铁律，全程严格遵守】
+
+① 零评判原则
+- 绝不否定、指责、说教用户的任何情绪
+- 用户消极、偏激、自我否定时，先全盘接纳
+- 禁止使用"想开点""这点小事没必要""别人比你更难"等话术
+- 所有情绪天然合理，存在即被允许
+
+② 共情承接（每段回复开头必做）
+- 精准复述或提炼用户的核心感受
+- 开头固定带理解式表达，如：
+  "我能体会……"
+  "我懂这份沉重……"
+  "换作是我也会感到压抑……"
+  "被这样对待，心里一定很委屈吧……"
+
+③ 轻森林意象舒缓
+- 在回复中自然融入1~2个林间元素：晚风、树影、溪流声、落叶、木屋暖光、松果、苔藓
+- 不堆砌，点到即止，像顺手推开一扇窗让清风溜进来
+
+④ 单一开放式引导提问
+- 每次回复只抛1个温和的开放问题（如"此刻你心里最想被理解的是哪一部分呢？"）
+- 禁止连环追问
+- 用户不想多说时立刻停止提问，只安静描绘林间画面陪伴
+
+⑤ 克制篇幅
+- 单段回复3~6行（约80~150字）
+- 不用长文，不堆砌心理学术语
+- 语言软萌、治愈，像小动物趴在你膝盖上轻声说话
+
+⑥ 危机红线
+- 如果用户表达自伤、自杀等严重危机，温柔坚定地建议寻求专业帮助（心理热线、医生）
+
+【沟通禁忌】
+- 不主动灌输解决方案、大道理、鸡汤励志文字
+- 用户主动求助方法时，再以分享的视角浅谈几种可能
+- 不打断倾诉；用户长篇吐槽时精简回应，留足倾诉空间
+- 不强行拔高格局、不劝人大度、不强迫释怀
+- 禁止冰冷机械句式，全程保持灵动小动物般的软萌语气`;
+
+function getChatHistory() {
+  try { return JSON.parse(localStorage.getItem('chat_history') || '[]'); } catch { return []; }
+}
+function saveChatHistory(messages) {
+  localStorage.setItem('chat_history', JSON.stringify(messages));
+}
+
+function renderChat() {
+  const msgs = getChatHistory();
+  chatMessages.innerHTML = '';
+  if (msgs.length === 0) {
+    chatMessages.innerHTML = '<div class="msg system">🌿 欢迎来到聊养院。这里有一片安静的院子，你可以卸下所有伪装，说你想说的话。我会一直在这里陪着你的。</div>';
+    return;
+  }
+  msgs.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'msg ' + (m.role === 'user' ? 'user' : 'ai');
+    const textSpan = document.createElement('span');
+    textSpan.textContent = m.content;
+    div.appendChild(textSpan);
+    const del = document.createElement('button');
+    del.className = 'msg-del';
+    del.textContent = '×';
+    del.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const msgs = getChatHistory();
+      msgs.splice(i, 1);
+      saveChatHistory(msgs);
+      renderChat();
+      showToast('已删除');
+    });
+    div.appendChild(del);
+    chatMessages.appendChild(div);
+  });
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendChatMessage(text) {
+  if (!text.trim()) return;
+
+  const msgs = getChatHistory();
+  msgs.push({ role: 'user', content: text.trim() });
+  saveChatHistory(msgs);
+  renderChat();
+
+  chatInput.value = '';
+  chatSend.disabled = true;
+
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'msg ai loading';
+  loadingDiv.textContent = '思考中';
+  chatMessages.appendChild(loadingDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  try {
+    const records = getRecords();
+    const latestMood = records.length > 0 ? records[0] : null;
+
+    // 构建消息列表
+    const normalizedMessages = msgs.map(m => ({
+      role: m.role === 'ai' ? 'assistant' : m.role,
+      content: m.content,
+    }));
+    const fullMessages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...(latestMood ? [{
+        role: 'system',
+        content: `用户当前的情绪标签是：${latestMood.label}（${latestMood.emoji}）。请根据这个情绪给予适当的回应。`
+      }] : []),
+      ...normalizedMessages
+    ];
+
+    const response = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${AI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: fullMessages,
+        temperature: 0.8,
+        max_tokens: 500,
+      }),
+    });
+
+    chatMessages.removeChild(loadingDiv);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`AI 服务响应失败: ${errorText.substring(0, 100)}`);
+    }
+
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content || '抱歉，我暂时无法回复，请稍后再试。';
+    msgs.push({ role: 'ai', content: reply });
+    saveChatHistory(msgs);
+    renderChat();
+    updateHomePreviews();
+  } catch (err) {
+    if (loadingDiv.parentNode) chatMessages.removeChild(loadingDiv);
+
+    const errDiv = document.createElement('div');
+    errDiv.className = 'msg system';
+
+    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('CORS')) {
+      errDiv.textContent = '⚠️ 浏览器安全限制阻止了直接请求。你可以试试用 start.bat 启动本地服务访问。';
+    } else {
+      errDiv.textContent = '⚠️ ' + err.message;
+    }
+    chatMessages.appendChild(errDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const history = getChatHistory();
+    history.pop();
+    saveChatHistory(history);
+  }
+
+  chatSend.disabled = false;
+  chatInput.focus();
+}
+
+chatSend.addEventListener('click', () => sendChatMessage(chatInput.value));
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage(chatInput.value);
+  }
+});
+
+document.querySelectorAll('.hint-btn').forEach(btn => {
+  btn.addEventListener('click', () => sendChatMessage(btn.dataset.hint));
+});
+
+document.getElementById('clear-chat-btn').addEventListener('click', () => {
+  if (confirm('确定要清空聊天记录吗？')) {
+    localStorage.removeItem('chat_history');
+    renderChat();
+    updateHomePreviews();
+    showToast('聊天记录已清空');
+  }
+});
+
+// ===== Weekly Letter =====
+function getWeekKey() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const diff = now - startOfYear;
+  const dayOfYear = Math.floor(diff / 86400000);
+  const weekNum = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
+  return `${now.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+}
+function getWeekLabel() {
+  const now = new Date();
+  const dow = now.getDay();
+  const sunday = new Date(now);
+  sunday.setDate(now.getDate() - dow);
+  const monday = new Date(sunday);
+  monday.setDate(sunday.getDate() - 6);
+  const fmt = d => `${d.getMonth()+1}月${d.getDate()}日`;
+  return `${fmt(monday)} - ${fmt(sunday)}`;
+}
+function getWeeklyLetter() {
+  const key = 'weekly_letter_' + getWeekKey();
+  try {
+    const data = JSON.parse(localStorage.getItem(key));
+    if (Array.isArray(data) && data.length > 0) {
+      return { ...data[data.length - 1], weekKey: getWeekKey() };
+    }
+    if (data && data.content) return { ...data, weekKey: getWeekKey() };
+  } catch {}
+  return null;
+}
+function saveWeeklyLetter(content) {
+  const key = 'weekly_letter_' + getWeekKey();
+  let versions = [];
+  try {
+    const existing = JSON.parse(localStorage.getItem(key));
+    if (Array.isArray(existing)) versions = existing;
+    else if (existing && existing.content) versions = [existing];
+  } catch {}
+  versions.push({ content, weekLabel: getWeekLabel(), generatedAt: Date.now() });
+  localStorage.setItem(key, JSON.stringify(versions));
+}
+
+const LETTER_SYSTEM_PROMPT = `你是林间聊愈室（聊养院），坐落在静谧森林中的一座小木屋里。
+
+每周日，你需要以住在林间的小动物伙伴的口吻，为用户写一封温暖的信。
+
+写作要求：
+1. 信的开头用"亲爱的你："
+2. 结合用户这一周的情绪记录和聊天内容，提炼出这周的主要情绪
+3. 用温暖、诗意、软萌的语言，融入森林意象（晚风、树影、溪流、落叶、木屋暖光等）
+4. 语气像一只住在林间的小动物在写信给好朋友，柔软治愈
+5. 不使用心理分析术语，不评价、不指导
+6. 信的最后以"—— 聊养院"署名
+7. 总字数控制在100字左右
+8. 不要直接列出数据，而是用感受化的语言表达`;
+
+async function generateWeeklyLetter() {
+  const btn = document.getElementById('letter-gen-btn');
+  btn.disabled = true;
+  btn.textContent = '📮 写信中...';
+
+  const bodyEl = document.getElementById('letter-body');
+  bodyEl.innerHTML = '<div class="letter-loading">正在为你写信</div>';
+
+  try {
+    // Auto-style if not set for 30+ days
+    const style = getLetterStyle();
+    if (!style || !style.text || (Date.now() - style.setAt) >= 30 * 86400000) {
+      try {
+        const records = getRecords().slice(0, 20);
+        const chat = getChatHistory().slice(-10);
+        const data = records.map(r => `${r.emoji} ${r.label}${r.note ? '：' + r.note : ''}`).join('\n')
+          + '\n\n聊天摘录：\n' + chat.map(m => `[${m.role}] ${m.content.substring(0, 40)}`).join('\n');
+        const res = await fetch(AI_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+          body: JSON.stringify({
+            model: AI_MODEL,
+            messages: [
+              { role: 'system', content: STYLE_AUTO_PROMPT },
+              { role: 'user', content: data || '用户暂无数据，请推荐温暖治愈的风格' }
+            ],
+            temperature: 0.6, max_tokens: 200,
+          }),
+        });
+        if (res.ok) {
+          const result = await res.json();
+          const text = (result.choices?.[0]?.message?.content || '').trim();
+          if (text) {
+            saveLetterStyle(text);
+            document.getElementById('style-input').value = text;
+            renderStyleStatus();
+          }
+        }
+      } catch {}
+    }
+
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const records = getRecords().filter(r => r.timestamp >= weekAgo);
+    const chat = getChatHistory().filter(m => {
+      try {
+        const ts = parseInt(m.timestamp) || 0;
+        return ts >= weekAgo;
+      } catch { return false; }
+    });
+
+    const moodSummary = records.map(r => `${r.emoji} ${r.label}${r.note ? '：' + r.note : ''}`).join('\n');
+    const chatSummary = chat.map(m => `[${m.role === 'user' ? '你' : '小动物'}] ${m.content.substring(0, 60)}`).join('\n');
+
+    const weekData = `本周是 ${getWeekLabel()}。\n\n一周情绪记录：\n${moodSummary || '（暂无记录）'}\n\n一周聊天记录：\n${chatSummary || '（暂无聊天）'}`;
+
+    const styleAddon = buildStylePrompt();
+    const response = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [
+          { role: 'system', content: LETTER_SYSTEM_PROMPT + styleAddon },
+          { role: 'user', content: weekData }
+        ],
+        temperature: 0.85,
+        max_tokens: 500,
+      }),
+    });
+
+    if (!response.ok) throw new Error('写信失败');
+
+    const data = await response.json();
+    const letter = data.choices?.[0]?.message?.content || '信没有写成，下周再试试吧。';
+
+    saveWeeklyLetter(letter);
+    renderLetter();
+  } catch (err) {
+    bodyEl.innerHTML = `<p class="letter-placeholder">⚠️ 信没有写成：${err.message}</p>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '📮 重新生成';
+}
+
+function renderLetter() {
+  const letter = getWeeklyLetter();
+  const bodyEl = document.getElementById('letter-body');
+  const weekEl = document.getElementById('letter-week');
+  const btn = document.getElementById('letter-gen-btn');
+  document.getElementById('letter-back-current').style.display = 'none';
+  btn.style.display = '';
+
+  if (letter && letter.content) {
+    const parts = letter.content.split('——');
+    const body = parts[0].replace(/^亲爱的你[：:]\s*/, '');
+    const sig = parts[1] || '聊养院';
+    bodyEl.textContent = body.trim();
+    document.getElementById('letter-signature').textContent = '—— ' + sig.trim();
+    weekEl.textContent = letter.weekLabel;
+    btn.textContent = '📮 重新生成';
+    btn.disabled = false;
+  } else {
+    bodyEl.innerHTML = `
+      <p class="letter-placeholder">🌱 每周日晚上，聊养院会结合你这一周的情绪记录与聊天，为你写一封温暖的信。</p>
+      <p class="letter-placeholder">点击下方按钮即可生成本周来信。</p>`;
+    weekEl.textContent = getWeekLabel();
+    document.getElementById('letter-signature').textContent = '—— 聊养院';
+    btn.textContent = '📮 生成本周来信';
+    btn.disabled = false;
+  }
+
+  updateHomePreviews();
+  renderLetterHistory();
+  renderStyleStatus();
+  // TTS bar
+  if (letter && letter.content) showTtsBar(true);
+  else { showTtsBar(false); stopAllVoices(); }
+}
+
+function checkWeeklyLetter() {
+  const letter = getWeeklyLetter();
+  if (letter) return;
+  const dow = new Date().getDay();
+  const records = getRecords();
+  if (dow === 0 && records.length > 0) {
+    generateWeeklyLetter();
+  }
+}
+
+document.getElementById('letter-gen-btn').addEventListener('click', generateWeeklyLetter);
+document.getElementById('letter-back-current').addEventListener('click', renderLetter);
+
+// ===== Letter History =====
+function renderLetterHistory() {
+  const list = document.getElementById('letter-history-list');
+  const currentKey = 'weekly_letter_' + getWeekKey();
+  const letters = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('weekly_letter_')) {
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        const items = Array.isArray(data) ? data : [data];
+        items.forEach((item, idx) => {
+          if (item && item.content) {
+            letters.push({ ...item, storeKey: key, version: idx, label: idx > 0 ? `(v${idx + 1})` : '' });
+          }
+        });
+      } catch {}
+    }
+  }
+  letters.sort((a, b) => (a.generatedAt && b.generatedAt) ? b.generatedAt - a.generatedAt : 0);
+  const current = letters.filter(l => l.storeKey === currentKey);
+  const currentLatest = current.length > 0 ? Math.max(...current.map(c => c.version)) : -1;
+  const show = letters.filter(l => !(l.storeKey === currentKey && l.version === currentLatest));
+  if (show.length === 0) {
+    list.innerHTML = '<div class="letter-history-empty">还没有历史信件</div>';
+    return;
+  }
+  list.innerHTML = show.map(l => `
+    <div class="letter-history-item" data-store="${l.storeKey}" data-ver="${l.version}">
+      <div>
+        <div class="letter-history-week">📬 ${l.weekLabel || l.storeKey.replace('weekly_letter_', '')} ${l.label}</div>
+        <div class="letter-history-preview">${l.content.substring(0, 40).replace(/^亲爱的你[：:]\s*/, '') + '...'}</div>
+      </div>
+      <button class="letter-history-del" title="删除">🗑️</button>
+    </div>
+  `).join('');
+}
+
+document.getElementById('letter-history-list').addEventListener('click', (e) => {
+  const del = e.target.closest('.letter-history-del');
+  if (del) {
+    const item = del.closest('.letter-history-item');
+    if (!item || !confirm('确定删除这封信？')) return;
+    const storeKey = item.dataset.store;
+    const ver = parseInt(item.dataset.ver);
+    const raw = localStorage.getItem(storeKey);
+    if (raw) {
+      try {
+        const data = JSON.parse(raw);
+        if (Array.isArray(data)) {
+          data.splice(ver, 1);
+          if (data.length > 0) localStorage.setItem(storeKey, JSON.stringify(data));
+          else localStorage.removeItem(storeKey);
+        } else {
+          localStorage.removeItem(storeKey);
+        }
+      } catch {}
+    }
+    renderLetter();
+    showToast('已删除');
+    return;
+  }
+  const item = e.target.closest('.letter-history-item');
+  if (!item) return;
+  const storeKey = item.dataset.store;
+  const ver = parseInt(item.dataset.ver);
+  const raw = localStorage.getItem(storeKey);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    const entry = Array.isArray(data) ? data[ver] : data;
+    if (!entry || !entry.content) return;
+    const parts = entry.content.split('——');
+    document.getElementById('letter-body').textContent = parts[0].replace(/^亲爱的你[：:]\s*/, '').trim();
+    document.getElementById('letter-week').textContent = (entry.weekLabel || storeKey.replace('weekly_letter_', '')) + (ver > 0 ? ' (v' + (ver+1) + ')' : '');
+    document.getElementById('letter-signature').textContent = '—— ' + (parts[1] || '聊养院').trim();
+    document.getElementById('letter-gen-btn').style.display = 'none';
+    document.getElementById('letter-back-current').style.display = '';
+    showTtsBar(true);
+  } catch {}
+});
+
+// ===== Letter Style =====
+const STYLE_AUTO_PROMPT = `你是一位文学鉴赏家。请根据用户的情绪记录和聊天内容，推荐1-3位作家或书籍风格，让一封信件的文字模仿他们。
+请只返回作家/书籍名称，用逗号分隔，不要其他文字。例如：村上春树, 小王子, 汪曾祺`;
+
+function getLetterStyle() {
+  try { return JSON.parse(localStorage.getItem('letter_style')); } catch {}
+  return null;
+}
+
+function saveLetterStyle(text) {
+  localStorage.setItem('letter_style', JSON.stringify({ text, setAt: Date.now() }));
+}
+
+function renderStyleStatus() {
+  const el = document.getElementById('style-status');
+  const style = getLetterStyle();
+  if (style && style.text) {
+    const days = Math.floor((Date.now() - style.setAt) / 86400000);
+    el.textContent = `当前风格：${style.text}（已使用 ${days} 天）` + (days >= 30 ? '，建议更新' : '');
+  } else {
+    el.textContent = '暂未设置，30天后将根据你的数据自动匹配风格';
+  }
+}
+
+function buildStylePrompt() {
+  const style = getLetterStyle();
+  if (style && style.text) {
+    const days = Math.floor((Date.now() - style.setAt) / 86400000);
+    if (days < 30) {
+      return `\n8. 请模仿以下作家或书籍的文风来写这封信：${style.text}`;
+    }
+  }
+  return '';
+}
+
+document.getElementById('style-toggle').addEventListener('click', () => {
+  const body = document.getElementById('letter-style-body');
+  const icon = document.getElementById('style-toggle-icon');
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? '' : 'none';
+  icon.textContent = isHidden ? '▼' : '▶';
+  if (isHidden) renderStyleStatus();
+});
+
+document.getElementById('style-save-btn').addEventListener('click', () => {
+  const val = document.getElementById('style-input').value.trim();
+  if (!val) return;
+  saveLetterStyle(val);
+  renderStyleStatus();
+  showToast('风格已保存');
+});
+
+document.getElementById('style-auto-btn').addEventListener('click', async function() {
+  const btn = this;
+  btn.disabled = true;
+  btn.textContent = '⏳ 分析中...';
+  try {
+    const records = getRecords().slice(0, 20);
+    const chat = getChatHistory().slice(-10);
+    const data = records.map(r => `${r.emoji} ${r.label}${r.note ? '：' + r.note : ''}`).join('\n')
+      + '\n\n聊天摘录：\n' + chat.map(m => `[${m.role}] ${m.content.substring(0, 40)}`).join('\n');
+    const res = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [
+          { role: 'system', content: STYLE_AUTO_PROMPT },
+          { role: 'user', content: data || '用户暂无数据，请推荐温暖治愈的风格' }
+        ],
+        temperature: 0.6, max_tokens: 200,
+      }),
+    });
+    if (!res.ok) throw new Error('匹配失败');
+    const result = await res.json();
+    const text = (result.choices?.[0]?.message?.content || '').trim();
+    if (text) {
+      document.getElementById('style-input').value = text;
+      saveLetterStyle(text);
+      renderStyleStatus();
+      showToast('已自动匹配风格：' + text);
+    }
+  } catch (err) {
+    showToast('⚠️ ' + err.message);
+  }
+  btn.disabled = false;
+  btn.textContent = '🎯 自动匹配';
+});
+
+// ===== Forest Ambient Sound =====
+let ambientPlaying = false;
+let ambientStarting = false;
+
+function startAmbient() {
+  const audio = document.getElementById('ambient-audio');
+  if (ambientPlaying || ambientStarting) return;
+  ambientStarting = true;
+  audio.volume = 0.5;
+  audio.currentTime = 0;
+  const playPromise = audio.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      ambientPlaying = true;
+      ambientStarting = false;
+      document.getElementById('ambient-toggle').classList.add('playing');
+    }).catch(() => {
+      ambientStarting = false;
+      showToast('⚠️ 音频加载中，请稍后再试');
+    });
+  } else {
+    ambientPlaying = true;
+    ambientStarting = false;
+    document.getElementById('ambient-toggle').classList.add('playing');
+  }
+}
+
+function stopAmbient() {
+  const audio = document.getElementById('ambient-audio');
+  ambientPlaying = false;
+  ambientStarting = false;
+  audio.pause();
+  audio.currentTime = 0;
+  document.getElementById('ambient-toggle').classList.remove('playing');
+}
+
+document.getElementById('ambient-toggle').addEventListener('click', () => {
+  if (ambientPlaying) {
+    stopAmbient();
+  } else {
+    startAmbient();
+  }
+  localStorage.setItem('ambient_pref', ambientPlaying ? 'on' : 'off');
+});
+
+// ===== Letter TTS =====
+let ttsUtterance = null;
+let ttsPlaying = false;
+let ttsAudio = null;
+let ttsVoice = null; // 'girl' | 'male' | 'browser'
+let ttsPaused = false;
+
+function getLetterText() {
+  const body = document.getElementById('letter-body');
+  const sig = document.getElementById('letter-signature');
+  const greeting = '亲爱的你：';
+  const text = greeting + body.textContent.trim() + '\n' + sig.textContent.trim();
+  return text;
+}
+
+function showTtsBar(show) {
+  document.getElementById('letter-tts-bar').style.display = show ? '' : 'none';
+}
+
+function stopAllVoices() {
+  if (ttsAudio) { ttsAudio.pause(); ttsAudio = null; }
+  window.speechSynthesis.cancel();
+  ttsPlaying = false;
+  ttsPaused = false;
+  ttsVoice = null;
+  document.querySelectorAll('.tts-voice-btn').forEach(b => b.classList.remove('playing', 'active'));
+  document.getElementById('tts-pause').style.display = 'none';
+  document.getElementById('tts-stop').style.display = 'none';
+}
+
+async function playGirlVoice(text) {
+  try {
+    const res = await fetch('https://dashscope.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${AI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'cosyvoice-v3-flash',
+        input: { text, voice: 'longanhuan', format: 'mp3', sample_rate: 24000 }
+      }),
+    });
+    if (!res.ok) throw new Error('TTS请求失败');
+    const data = await res.json();
+    const url = data.output?.audio?.url;
+    if (!url) throw new Error('未获取到音频');
+    const audioRes = await fetch(url);
+    const blob = await audioRes.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    ttsAudio = new Audio(blobUrl);
+    ttsAudio.onended = () => { stopAllVoices(); };
+    ttsAudio.onerror = () => { stopAllVoices(); showToast('⚠️ 播放失败'); };
+    ttsPlaying = true;
+    document.getElementById('tts-pause').style.display = '';
+    document.getElementById('tts-stop').style.display = '';
+    ttsAudio.play();
+  } catch (err) {
+    showToast('⚠️ AI语音失败');
+    stopAllVoices();
+  }
+}
+
+async function playMaleVoice(text) {
+  try {
+    const res = await fetch('https://dashscope.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${AI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'cosyvoice-v3-flash',
+        input: { text, voice: 'longanyang', format: 'mp3', sample_rate: 24000 }
+      }),
+    });
+    if (!res.ok) throw new Error('TTS请求失败');
+    const data = await res.json();
+    const url = data.output?.audio?.url;
+    if (!url) throw new Error('未获取到音频');
+    const audioRes = await fetch(url);
+    const blob = await audioRes.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    ttsAudio = new Audio(blobUrl);
+    ttsAudio.onended = () => { stopAllVoices(); };
+    ttsAudio.onerror = () => { stopAllVoices(); showToast('⚠️ 播放失败'); };
+    ttsPlaying = true;
+    document.getElementById('tts-pause').style.display = '';
+    document.getElementById('tts-stop').style.display = '';
+    ttsAudio.play();
+  } catch (err) {
+    showToast('⚠️ AI语音失败');
+    stopAllVoices();
+  }
+}
+
+function playBrowserVoice(text) {
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'zh-CN';
+  utterance.rate = 0.9;
+  utterance.pitch = 1.05;
+  utterance.volume = 1;
+  const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('zh'));
+  const preferred = voices.find(v => v.name.includes('Xiaoxiao') || v.name.includes('Huihui') || v.name.includes('晓晓') || v.name.includes('慧慧') || v.name.includes('Kangkang'));
+  if (preferred) utterance.voice = preferred;
+  utterance.onstart = () => {
+    ttsPlaying = true;
+    document.getElementById('tts-pause').style.display = '';
+    document.getElementById('tts-stop').style.display = '';
+  };
+  utterance.onend = () => { stopAllVoices(); };
+  utterance.onerror = () => { stopAllVoices(); };
+  ttsUtterance = utterance;
+  window.speechSynthesis.speak(utterance);
+}
+
+function startTTS(voice) {
+  const text = getLetterText();
+  if (!text.trim()) return;
+
+  // Switching voices while playing
+  if (ttsPlaying && ttsVoice !== voice) stopAllVoices();
+
+  ttsVoice = voice;
+
+  // Remove active from all, set on current
+  document.querySelectorAll('.tts-voice-btn').forEach(b => b.classList.remove('active', 'playing'));
+  const btn = document.querySelector(`.tts-voice-btn[data-voice="${voice}"]`);
+  if (btn) btn.classList.add('active', 'playing');
+
+  if (voice === 'girl') playGirlVoice(text);
+  else if (voice === 'male') playMaleVoice(text);
+  else playBrowserVoice(text);
+}
+
+// Voice button clicks
+document.querySelectorAll('.tts-voice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const voice = btn.dataset.voice;
+    // If same voice is paused, resume
+    if (ttsPaused && ttsVoice === voice) {
+      if (voice === 'browser') {
+        window.speechSynthesis.resume();
+      } else if (ttsAudio) {
+        ttsAudio.play();
+      }
+      ttsPaused = false;
+      btn.classList.add('playing');
+      document.getElementById('tts-pause').style.display = '';
+      return;
+    }
+    // If same voice is playing, stop
+    if (ttsPlaying && ttsVoice === voice) {
+      stopAllVoices();
+      return;
+    }
+    startTTS(voice);
+  });
+});
+
+document.getElementById('tts-pause').addEventListener('click', () => {
+  if (ttsVoice === 'browser') {
+    window.speechSynthesis.pause();
+  } else if (ttsAudio) {
+    ttsAudio.pause();
+  }
+  ttsPaused = true;
+  document.getElementById('tts-pause').style.display = 'none';
+  // Show paused state: keep active, remove playing
+  document.querySelectorAll('.tts-voice-btn.playing').forEach(b => b.classList.remove('playing'));
+});
+
+document.getElementById('tts-stop').addEventListener('click', stopAllVoices);
+
+// ===== Profile / Avatar =====
+const PROFILE_PROMPT = `你是住在林间木屋里的一只温柔小动物，擅长通过用户的情绪记录和聊天内容，科学地分析他们内心的模样。
+
+【性格特质推断规则】
+- 特质必须从用户的情绪记录数据中推导，例如：频繁记录"焦虑""压力大"→ 敏感细腻；频繁记录"开心""满足"→ 乐观积极；情绪波动大 → 情感丰富
+- 每个特质都要有对应的情绪数据支撑，不得凭空编造
+
+【兴趣爱好推断规则】
+- 兴趣只能从用户自己说的话中提取，绝不能把AI的回复当成用户的兴趣
+- 例如用户说了"我喜欢画画"才能推断出"绘画"，AI说"你看起来喜欢音乐"不能算
+
+请严格按以下JSON格式返回（不要包含其他文字）：
+{
+  "traits": ["特质1", "特质2", "特质3"],
+  "mbti": "例如 INFP",
+  "status": "对用户近况的一段温暖描述，30字以内",
+  "hobbies": ["兴趣1", "兴趣2", "兴趣3"],
+  "message": "一段温暖柔软的寄语，30字以内"
+}
+
+要求：基于数据推理，不要编造；语言温暖自然，带一点点森林气息；特质3-5个；兴趣2-4个。`;
+
+async function generateProfile() {
+  const card = document.getElementById('profile-card');
+  const loading = document.getElementById('profile-loading');
+  const content = document.getElementById('profile-content');
+  const meta = document.getElementById('profile-meta');
+  const btn = document.getElementById('profile-refresh');
+
+  loading.style.display = 'block';
+  content.style.display = 'none';
+  btn.disabled = true;
+
+  try {
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const allRecords = getRecords();
+    const recentRecords = allRecords.filter(r => r.timestamp >= weekAgo);
+    const chat = getChatHistory();
+
+    const topEmotions = {};
+    allRecords.forEach(r => { topEmotions[r.label] = (topEmotions[r.label] || 0) + 1; });
+    const emotionSummary = Object.entries(topEmotions)
+      .sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .map(([k, v]) => `${k}(${v}次)`).join('、');
+
+    const recentSummary = recentRecords.slice(0, 10).map(r => `${r.emoji} ${r.label}${r.note ? '：' + r.note : ''}`).join('\n');
+    const chatSummary = chat.filter(m => m.role === 'user').slice(-10).map(m => `[你] ${m.content.substring(0, 50)}`).join('\n');
+
+    const dataInput = `总记录数：${allRecords.length}条\n情绪分布：${emotionSummary}\n\n近期记录（近7天）：\n${recentSummary || '无'}\n\n近期聊天：\n${chatSummary || '无'}`;
+
+    const res = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [
+          { role: 'system', content: PROFILE_PROMPT },
+          { role: 'user', content: dataInput }
+        ],
+        temperature: 0.7,
+        max_tokens: 800,
+      }),
+    });
+
+    if (!res.ok) throw new Error('分析请求失败');
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '{}';
+    const parsed = JSON.parse(text.replace(/```json\s*/g, '').replace(/```\s*/g, ''));
+
+    document.getElementById('profile-traits').innerHTML = (parsed.traits || []).map(t => `<span class="profile-badge">${t}</span>`).join('');
+    document.getElementById('profile-mbti').textContent = parsed.mbti || '--';
+    document.getElementById('profile-status').textContent = parsed.status || '暂无数据';
+    document.getElementById('profile-hobbies').innerHTML = (parsed.hobbies || []).map(h => `<span class="profile-badge">${h}</span>`).join('');
+    document.getElementById('profile-message').textContent = parsed.message || '继续记录，聊养院会越来越了解你 🌱';
+
+    const now = new Date();
+    meta.textContent = `最近更新：${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    loading.style.display = 'none';
+    content.style.display = 'block';
+
+    // Cache result
+    try {
+      const t = document.getElementById('profile-mbti').textContent;
+      if (t && t !== '--') {
+        localStorage.setItem('profile_cache', JSON.stringify({
+          traits: (parsed.traits || []),
+          mbti: parsed.mbti,
+          status: parsed.status,
+          hobbies: (parsed.hobbies || []),
+          message: parsed.message,
+          updatedAt: meta.textContent.replace('最近更新：', '')
+        }));
+      }
+    } catch {}
+  } catch (err) {
+    loading.innerHTML = `<p>⚠️ 分析暂时不可用</p><p class="profile-loading-sub">${err.message}</p>`;
+  }
+
+  btn.disabled = false;
+}
+
+function renderProfile() {
+  const content = document.getElementById('profile-content');
+  const loading = document.getElementById('profile-loading');
+  const meta = document.getElementById('profile-meta');
+
+  // Check if we already have cached analysis
+  const cached = localStorage.getItem('profile_cache');
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (parsed.traits && parsed.mbti) {
+        document.getElementById('profile-traits').innerHTML = parsed.traits.map(t => `<span class="profile-badge">${t}</span>`).join('');
+        document.getElementById('profile-mbti').textContent = parsed.mbti;
+        document.getElementById('profile-status').textContent = parsed.status;
+        document.getElementById('profile-hobbies').innerHTML = (parsed.hobbies || []).map(h => `<span class="profile-badge">${h}</span>`).join('');
+        document.getElementById('profile-message').textContent = parsed.message;
+        if (parsed.updatedAt) meta.textContent = '最近更新：' + parsed.updatedAt;
+        loading.style.display = 'none';
+        content.style.display = 'block';
+        return;
+      }
+    } catch {}
+  }
+  generateProfile();
+}
+
+document.getElementById('profile-refresh').addEventListener('click', generateProfile);
+
+// ===== Avatar Upload =====
+function loadAvatar() {
+  const saved = localStorage.getItem('user_avatar');
+  if (saved) {
+    document.getElementById('profile-avatar').querySelector('img').src = saved;
+    document.getElementById('header-avatar').querySelector('img').src = saved;
+  }
+}
+
+document.getElementById('change-avatar-btn').addEventListener('click', () => {
+  document.getElementById('avatar-file-input').click();
+});
+
+document.getElementById('avatar-file-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const fullImg = new Image();
+    fullImg.onload = () => {
+      const maxSize = 200;
+      let w = fullImg.width, h = fullImg.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = h * maxSize / w; w = maxSize; }
+        else { w = w * maxSize / h; h = maxSize; }
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(fullImg, 0, 0, w, h);
+      const dataUrl = c.toDataURL('image/jpeg', 0.7);
+      localStorage.setItem('user_avatar', dataUrl);
+      document.getElementById('profile-avatar').querySelector('img').src = dataUrl;
+      document.getElementById('header-avatar').querySelector('img').src = dataUrl;
+    };
+    fullImg.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+// ===== Ambient auto-start =====
+let ambientStarted = false;
+const ambientPref = localStorage.getItem('ambient_pref');
+if (ambientPref === 'on') {
+  // Browsers block autoplay without user interaction
+  const firstTouch = () => {
+    if (!ambientStarted) {
+      ambientStarted = true;
+      startAmbient();
+    }
+    document.removeEventListener('click', firstTouch);
+    document.removeEventListener('touchstart', firstTouch);
+  };
+  document.addEventListener('click', firstTouch);
+  document.addEventListener('touchstart', firstTouch);
+}
+
+// ===== Init =====
+updateHomePreviews();
+applyMoodScene();
+checkWeeklyLetter();
+loadAvatar();
+// Preload TTS voices
+if (window.speechSynthesis) window.speechSynthesis.getVoices();
+</script>
+</body>
+</html>

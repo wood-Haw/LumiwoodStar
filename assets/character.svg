@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">
+  <!-- Shadow -->
+  <ellipse cx="60" cy="95" rx="30" ry="5" fill="rgba(0,0,0,0.1)"/>
+  <!-- Toga body -->
+  <ellipse cx="60" cy="65" rx="36" ry="28" fill="#E8DCC8"/>
+  <ellipse cx="60" cy="65" rx="36" ry="28" fill="url(#togaGrad)"/>
+  <!-- Toga drape -->
+  <path d="M30 55 Q42 70 60 60 Q78 70 90 55" stroke="#D4C4A8" stroke-width="1.5" fill="none"/>
+  <!-- Arm left -->
+  <ellipse cx="28" cy="68" rx="8" ry="14" fill="#E8DCC8" transform="rotate(20 28 68)"/>
+  <!-- Arm right -->
+  <ellipse cx="92" cy="68" rx="8" ry="14" fill="#E8DCC8" transform="rotate(-20 92 68)"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="38" rx="22" ry="24" fill="#F5D6B8"/>
+  <!-- Bald top highlight -->
+  <ellipse cx="60" cy="28" rx="14" ry="8" fill="#FDE8D0" opacity="0.5"/>
+  <!-- Wispy hair on sides -->
+  <ellipse cx="40" cy="30" rx="6" ry="10" fill="#C0B0A0" transform="rotate(-10 40 30)"/>
+  <ellipse cx="80" cy="30" rx="6" ry="10" fill="#C0B0A0" transform="rotate(10 80 30)"/>
+  <!-- Eyebrows - bushy -->
+  <path d="M44 40 Q52 36 56 40" stroke="#A09080" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M64 40 Q68 36 76 40" stroke="#A09080" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Eyes - big and round -->
+  <circle cx="48" cy="47" r="7" fill="#fff"/>
+  <circle cx="72" cy="47" r="7" fill="#fff"/>
+  <!-- Pupils - thoughtful looking up -->
+  <circle cx="49" cy="45" r="4" fill="#333"/>
+  <circle cx="73" cy="45" r="4" fill="#333"/>
+  <!-- Eye highlights -->
+  <circle cx="51" cy="43" r="1.8" fill="#fff"/>
+  <circle cx="75" cy="43" r="1.8" fill="#fff"/>
+  <!-- Nose - big greek nose -->
+  <path d="M57 48 Q55 54 60 57 Q65 54 63 48" fill="#E8C8A8" stroke="none"/>
+  <!-- Beard - bushy white -->
+  <path d="M38 55 Q40 50 44 52 Q48 48 52 52 Q56 48 60 52 Q64 48 68 52 Q72 48 76 52 Q80 50 82 55 Q84 65 80 74 Q72 80 60 80 Q48 80 40 74 Q36 65 38 55Z" fill="#F0EDE8" opacity="0.9"/>
+  <!-- Beard texture lines -->
+  <path d="M45 60 Q50 58 55 62" stroke="#DDD8D0" stroke-width="0.8" fill="none"/>
+  <path d="M60 60 Q62 58 65 62" stroke="#DDD8D0" stroke-width="0.8" fill="none"/>
+  <path d="M75 60 Q70 58 67 62" stroke="#DDD8D0" stroke-width="0.8" fill="none"/>
+  <!-- Cheek blush -->
+  <circle cx="36" cy="52" r="5" fill="#FFB0A0" opacity="0.25"/>
+  <circle cx="84" cy="52" r="5" fill="#FFB0A0" opacity="0.25"/>
+  <!-- Smile under beard -->
+  <path d="M52 58 Q60 64 68 58" stroke="#996633" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <defs>
+    <radialGradient id="togaGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#F0E8DC" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#D0C0A0" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+</svg>
