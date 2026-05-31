@@ -2965,17 +2965,15 @@ async function playGirlVoice(text) {
       },
       body: JSON.stringify({
         model: 'cosyvoice-v3-flash',
-        input: { text, voice: 'longanhuan', format: 'mp3', sample_rate: 24000 }
+        input: { text },
+        parameters: { voice: 'longanhuan', format: 'mp3', sample_rate: 24000 }
       }),
     });
     if (!res.ok) throw new Error('TTS请求失败');
     const data = await res.json();
-    const url = data.output?.audio?.url;
+    const url = data.output?.audio?.url || data.output?.audio_url;
     if (!url) throw new Error('未获取到音频');
-    const audioRes = await fetch(url);
-    const blob = await audioRes.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    ttsAudio = new Audio(blobUrl);
+    ttsAudio = new Audio(url);
     ttsAudio.onended = () => { stopAllVoices(); };
     ttsAudio.onerror = () => { stopAllVoices(); showToast('⚠️ 播放失败'); };
     ttsPlaying = true;
@@ -2998,17 +2996,15 @@ async function playMaleVoice(text) {
       },
       body: JSON.stringify({
         model: 'cosyvoice-v3-flash',
-        input: { text, voice: 'longanyang', format: 'mp3', sample_rate: 24000 }
+        input: { text },
+        parameters: { voice: 'longanyang', format: 'mp3', sample_rate: 24000 }
       }),
     });
     if (!res.ok) throw new Error('TTS请求失败');
     const data = await res.json();
-    const url = data.output?.audio?.url;
+    const url = data.output?.audio?.url || data.output?.audio_url;
     if (!url) throw new Error('未获取到音频');
-    const audioRes = await fetch(url);
-    const blob = await audioRes.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    ttsAudio = new Audio(blobUrl);
+    ttsAudio = new Audio(url);
     ttsAudio.onended = () => { stopAllVoices(); };
     ttsAudio.onerror = () => { stopAllVoices(); showToast('⚠️ 播放失败'); };
     ttsPlaying = true;
