@@ -2326,6 +2326,29 @@ const chatSend = document.getElementById('chat-send');
 const chatStatus = document.getElementById('chat-status');
 
 // ============ AI 配置 ============
+// fetch polyfill for WeChat X5 kernel (no native fetch)
+if (!window.fetch) {
+  window.fetch = function(url, opts) {
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open((opts && opts.method) || 'GET', url);
+      xhr.responseType = 'json';
+      if (opts && opts.headers) {
+        for (var k in opts.headers) xhr.setRequestHeader(k, opts.headers[k]);
+      }
+      xhr.onload = function() {
+        resolve({
+          ok: xhr.status >= 200 && xhr.status < 300,
+          status: xhr.status,
+          json: function() { return Promise.resolve(xhr.response); },
+          text: function() { return Promise.resolve(xhr.responseText); }
+        });
+      };
+      xhr.onerror = function() { reject(new Error('Network error')); };
+      xhr.send(opts && opts.body ? opts.body : null);
+    });
+  };
+}
 const AI_API_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
 const AI_API_KEY = 'sk-919bb64580754e5d8f0cf0259080939d';
 const AI_MODEL = 'qwen-plus';
@@ -2955,7 +2978,7 @@ function stopAllVoices() {
   document.getElementById('tts-stop').style.display = 'none';
 }
 
-async function playGirlVoice(text) {
+async function playCosyVoice(text, voiceName) {
   try {
     const res = await fetch('https://dashscope.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer', {
       method: 'POST',
@@ -2966,13 +2989,16 @@ async function playGirlVoice(text) {
       body: JSON.stringify({
         model: 'cosyvoice-v3-flash',
         input: { text },
-        parameters: { voice: 'longanhuan', format: 'mp3', sample_rate: 24000 }
+        parameters: { voice: voiceName, format: 'mp3', sample_rate: 24000 }
       }),
     });
-    if (!res.ok) throw new Error('TTS请求失败');
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`API ${res.status}: ${errText.substring(0, 80)}`);
+    }
     const data = await res.json();
     const url = data.output?.audio?.url || data.output?.audio_url;
-    if (!url) throw new Error('未获取到音频');
+    if (!url) throw new Error('响应中缺少音频链接');
     ttsAudio = new Audio(url);
     ttsAudio.onended = () => { stopAllVoices(); };
     ttsAudio.onerror = () => { stopAllVoices(); showToast('⚠️ 播放失败'); };
@@ -2981,41 +3007,20 @@ async function playGirlVoice(text) {
     document.getElementById('tts-stop').style.display = '';
     ttsAudio.play();
   } catch (err) {
-    showToast('⚠️ AI语音失败');
-    stopAllVoices();
+    // If WeChat blocks the request, fall back to browser TTS
+    const isWechat = navigator.userAgent.toLowerCase().includes('micromessenger');
+    if (isWechat && window.speechSynthesis) {
+      showToast('🌲 AI语音被拦截，已切换为浏览器语音');
+      playBrowserVoice(text);
+    } else {
+      showToast('⚠️ ' + err.message.substring(0, 30));
+      stopAllVoices();
+    }
   }
 }
 
-async function playMaleVoice(text) {
-  try {
-    const res = await fetch('https://dashscope.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'cosyvoice-v3-flash',
-        input: { text },
-        parameters: { voice: 'longanyang', format: 'mp3', sample_rate: 24000 }
-      }),
-    });
-    if (!res.ok) throw new Error('TTS请求失败');
-    const data = await res.json();
-    const url = data.output?.audio?.url || data.output?.audio_url;
-    if (!url) throw new Error('未获取到音频');
-    ttsAudio = new Audio(url);
-    ttsAudio.onended = () => { stopAllVoices(); };
-    ttsAudio.onerror = () => { stopAllVoices(); showToast('⚠️ 播放失败'); };
-    ttsPlaying = true;
-    document.getElementById('tts-pause').style.display = '';
-    document.getElementById('tts-stop').style.display = '';
-    ttsAudio.play();
-  } catch (err) {
-    showToast('⚠️ AI语音失败');
-    stopAllVoices();
-  }
-}
+function playGirlVoice(text) { playCosyVoice(text, 'longanhuan'); }
+function playMaleVoice(text) { playCosyVoice(text, 'longanyang'); }
 
 function playBrowserVoice(text) {
   window.speechSynthesis.cancel();
