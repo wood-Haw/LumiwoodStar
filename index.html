@@ -430,6 +430,99 @@
   }
   .trend-chart-container canvas { display: block; width: 100%; height: 160px; }
 
+  /* --- Word Cloud --- */
+  .wordcloud-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 10px; }
+  .wc-nav-btn {
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wc-month { font-size: 14px; font-weight: 600; color: var(--text); }
+  .wordcloud-box {
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45); border-radius: 14px;
+    padding: 16px; min-height: 120px; display: flex; flex-wrap: wrap;
+    align-items: center; justify-content: center; gap: 8px 12px;
+    overflow: hidden;
+  }
+  .wc-word {
+    display: inline-block; padding: 2px 6px; border-radius: 6px;
+    transition: transform 0.2s; cursor: default; line-height: 1.3;
+  }
+  .wc-word:hover { transform: scale(1.1); }
+
+  /* --- AI Report --- */
+  .report-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .report-tab {
+    flex: 1; padding: 10px; border: none; border-radius: 12px;
+    background: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer;
+    transition: all 0.2s; font-weight: 500;
+  }
+  .report-tab.active {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff; box-shadow: 0 2px 8px rgba(108,92,231,0.2);
+  }
+  .report-box {
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45); border-radius: 14px;
+    padding: 16px; min-height: 100px; max-height: 400px; overflow-y: auto;
+    font-size: 13px; line-height: 1.8; color: var(--text);
+    white-space: pre-wrap;
+  }
+  .report-placeholder { color: #aaa; text-align: center; padding: 24px 0; }
+  .report-gen-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, #00b894, #55efc4);
+    color: #fff; font-size: 14px; font-weight: 600;
+    cursor: pointer; margin-top: 12px;
+    box-shadow: 0 3px 12px rgba(0,184,148,0.2);
+  }
+  .report-gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .report-gen-btn:active:not(:disabled) { transform: scale(0.98); }
+
+  /* --- Correlation Box --- */
+  .corr-box {
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.45); border-radius: 14px;
+    padding: 14px; max-height: 350px; overflow-y: auto;
+  }
+  .corr-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+  .corr-item:last-child { border-bottom: none; }
+  .corr-label { font-size: 13px; color: var(--text); min-width: 100px; }
+  .corr-bar-bg {
+    flex: 1; height: 8px; background: rgba(0,0,0,0.06); border-radius: 4px; overflow: hidden;
+  }
+  .corr-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .corr-val { font-size: 12px; font-weight: 600; min-width: 40px; text-align: right; }
+  .rule-item {
+    padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
+    font-size: 13px; line-height: 1.6;
+  }
+  .rule-item:last-child { border-bottom: none; }
+  .rule-arrow { color: var(--primary); font-weight: 600; margin: 0 4px; }
+  .rule-conf { font-size: 11px; color: #999; margin-left: 6px; }
+  .corr-title { font-size: 13px; font-weight: 600; color: var(--text); margin: 10px 0 6px; }
+
+  /* --- Sentiment Detail --- */
+  .sentiment-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .sentiment-item {
+    text-align: center; padding: 10px 4px; border-radius: 12px;
+    background: rgba(255,255,255,0.6);
+  }
+  .sentiment-item .si-emoji { font-size: 20px; }
+  .sentiment-item .si-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .sentiment-item .si-bar { height: 4px; background: rgba(0,0,0,0.06); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .sentiment-item .si-fill { height: 100%; border-radius: 2px; }
+  .hidden-alert {
+    padding: 12px; border-radius: 12px; margin-top: 8px;
+    background: rgba(231,76,60,0.08); border-left: 3px solid #e74c3c;
+    font-size: 13px; line-height: 1.6; color: var(--text);
+  }
+  .hidden-alert-title { font-weight: 600; color: #e74c3c; margin-bottom: 4px; }
+
   /* --- Day Detail Modal --- */
   .day-modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 1000;
@@ -1215,6 +1308,149 @@
   .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .submit-btn:active:not(:disabled) { transform: scale(0.98); }
 
+  /* --- Record Toolbar --- */
+  .record-toolbar { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .record-btn {
+    width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    font-size: 18px; cursor: pointer; transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .record-btn:active { transform: scale(0.92); }
+  .record-btn.recording {
+    border-color: #e74c3c; background: rgba(231,76,60,0.12);
+    animation: pulse-mic 1s ease-in-out infinite;
+  }
+  @keyframes pulse-mic {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(231,76,60,0); }
+  }
+  .record-toolbar-status { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+
+  /* --- Image Preview --- */
+  .image-preview {
+    position: relative; margin-top: 10px; border-radius: 12px; overflow: hidden;
+    display: inline-block; max-width: 100%;
+  }
+  .image-preview img {
+    max-height: 180px; max-width: 100%; border-radius: 12px;
+    display: block; box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  .image-preview-remove {
+    position: absolute; top: 6px; right: 6px; width: 26px; height: 26px;
+    border-radius: 50%; border: none; background: rgba(0,0,0,0.55);
+    color: #fff; font-size: 16px; line-height: 26px; text-align: center;
+    cursor: pointer;
+  }
+  .history-image { margin-top: 8px; }
+  .history-image img {
+    max-height: 120px; max-width: 100%; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .dm-image { margin-top: 6px; }
+  .dm-image img { max-height: 160px; max-width: 100%; border-radius: 8px; }
+
+  /* --- Category Tabs --- */
+  .category-tabs { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .category-tabs::-webkit-scrollbar { display: none; }
+  .category-tab {
+    flex-shrink: 0; padding: 8px 16px; border-radius: 20px; border: none;
+    background: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .category-tab.active {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff; box-shadow: 0 2px 8px rgba(108,92,231,0.2);
+  }
+
+  /* --- Cause Tags --- */
+  .cause-tags-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 4px; }
+  .cause-tag {
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.45); border-radius: 12px;
+    padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .cause-tag:active { transform: scale(0.95); }
+  .cause-tag.selected {
+    border-color: var(--primary); background: rgba(108,92,231,0.12);
+    box-shadow: 0 2px 10px rgba(108,92,231,0.15);
+  }
+  .cause-tag .ct-emoji { font-size: 22px; display: block; margin-bottom: 3px; }
+  .cause-tag .ct-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+  .cause-tag.selected .ct-label { color: var(--primary); }
+
+  /* --- Weather Row --- */
+  .weather-row { display: flex; gap: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .weather-row::-webkit-scrollbar { display: none; }
+  .weather-option {
+    flex-shrink: 0; width: 56px; text-align: center; cursor: pointer; transition: all 0.2s;
+    background: rgba(255,255,255,0.65); border-radius: 14px; padding: 10px 4px 8px;
+    border: 1.5px solid transparent;
+  }
+  .weather-option:active { transform: scale(0.95); }
+  .weather-option.selected {
+    border-color: var(--primary); background: rgba(108,92,231,0.1);
+    box-shadow: 0 2px 8px rgba(108,92,231,0.12);
+  }
+  .weather-option .wo-emoji { font-size: 24px; display: block; }
+  .weather-option .wo-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* --- History tags/weather --- */
+  .history-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .history-tag-chip {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    background: rgba(108,92,231,0.1); color: var(--primary);
+  }
+  .history-weather { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .dm-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .dm-tag-chip {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    background: rgba(108,92,231,0.1); color: var(--primary);
+  }
+  .dm-weather { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* --- Life Tags --- */
+  .life-tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .life-tag {
+    flex-shrink: 0; padding: 6px 12px; border-radius: 14px; font-size: 12px;
+    background: rgba(255,255,255,0.75); border: 1.5px solid rgba(255,255,255,0.45);
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  .life-tag:active { transform: scale(0.95); }
+  .life-tag.selected {
+    border-color: var(--primary); background: rgba(108,92,231,0.12);
+  }
+  .life-tag .lt-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-secondary); }
+  .life-tag.selected .lt-icon { color: var(--primary); }
+  .life-tag .lt-label { font-size: 12px; color: var(--text-secondary); }
+  .life-tag.selected .lt-label { color: var(--primary); font-weight: 500; }
+  .history-life { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .history-life-chip {
+    font-size: 11px; padding: 1px 6px; border-radius: 8px;
+    background: rgba(253,203,110,0.15); color: #e17055;
+  }
+  .dm-life { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .dm-life-chip {
+    font-size: 11px; padding: 1px 6px; border-radius: 8px;
+    background: rgba(253,203,110,0.15); color: #e17055;
+  }
+
+  /* --- History Filter --- */
+  .history-filter { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 12px; padding-bottom: 4px; }
+  .history-filter::-webkit-scrollbar { display: none; }
+  .hf-btn {
+    flex-shrink: 0; padding: 6px 14px; border-radius: 16px; border: none;
+    font-size: 12px; cursor: pointer; transition: all 0.2s;
+    background: rgba(255,255,255,0.6); color: var(--text-secondary);
+  }
+  .hf-btn.active {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff; box-shadow: 0 2px 8px rgba(108,92,231,0.2);
+  }
+
   /* --- History --- */
   .empty-state { text-align: center; padding: 40px 16px; color: var(--text-secondary); }
   .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
@@ -1403,10 +1639,27 @@
       <button class="back-btn" data-tab="home">←</button>
       <span class="panel-title">📝 记录心情</span>
     </div>
+    <div class="category-tabs" id="category-tabs"></div>
     <div class="section-title">此刻你的感受是？</div>
     <div class="emotion-grid" id="emotion-grid"></div>
-    <div class="section-title" style="margin-top:8px">写点什么...</div>
+    <div class="section-title" style="margin-top:10px">是什么让你有这种感觉？</div>
+    <div class="cause-tags-grid" id="cause-tags-grid"></div>
+    <div class="section-title" style="margin-top:10px">今天天气</div>
+    <div class="weather-row" id="weather-row"></div>
+    <div class="section-title" style="margin-top:10px">今天状态</div>
+    <div class="life-tags-row" id="life-tags-row"></div>
+    <div class="section-title" style="margin-top:10px">写点什么...</div>
     <textarea class="note-input" id="note-input" placeholder="记录一下今天发生了什么，或者你的感受..."></textarea>
+    <div class="record-toolbar">
+      <input type="file" id="image-picker" accept="image/*" hidden>
+      <button class="record-btn" id="btn-image" title="添加图片">🖼️</button>
+      <button class="record-btn" id="btn-voice" title="语音速记">🎤</button>
+      <span class="record-toolbar-status" id="record-status"></span>
+    </div>
+    <div class="image-preview" id="image-preview" style="display:none">
+      <img id="image-preview-img">
+      <button class="image-preview-remove" id="image-preview-remove">&times;</button>
+    </div>
     <button class="submit-btn" id="submit-btn" disabled>保存记录</button>
   </div>
 
@@ -1416,6 +1669,7 @@
       <button class="back-btn" data-tab="home">←</button>
       <span class="panel-title">📋 历史记录</span>
     </div>
+    <div class="history-filter" id="history-filter"></div>
     <div id="history-container"></div>
   </div>
 
@@ -1475,6 +1729,41 @@
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-legend" id="cal-legend"></div>
     </div>
+
+    <div class="section-title">☁️ 情绪词云</div>
+    <div class="wordcloud-nav">
+      <button class="wc-nav-btn" id="wc-prev">‹</button>
+      <span class="wc-month" id="wc-month"></span>
+      <button class="wc-nav-btn" id="wc-next">›</button>
+    </div>
+    <div class="wordcloud-box" id="wordcloud-box"></div>
+
+    <div class="section-title">🔗 关联分析</div>
+    <div class="corr-box" id="corr-box">
+      <p class="report-placeholder">帮你找出哪些事会影响你的心情</p>
+    </div>
+    <button class="report-gen-btn" id="corr-gen-btn" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)">🔬 开始分析</button>
+
+    <div class="section-title">🧠 AI 情绪分析</div>
+    <div class="report-tabs" id="sentiment-tabs">
+      <button class="report-tab active" data-mode="detail">情绪细分</button>
+      <button class="report-tab" data-mode="hidden">内心隐藏</button>
+    </div>
+    <div class="report-box" id="sentiment-box">
+      <p class="report-placeholder">AI 帮你读懂日记里的真实情绪</p>
+    </div>
+    <button class="report-gen-btn" id="sentiment-gen-btn" style="background:linear-gradient(135deg,#e17055,#fab1a0)">🧠 开始分析</button>
+
+    <div class="section-title">📋 AI 心理健康报告</div>
+    <div class="report-tabs" id="report-tabs">
+      <button class="report-tab active" data-period="week">周报告</button>
+      <button class="report-tab" data-period="month">月报告</button>
+      <button class="report-tab" data-period="year">年报告</button>
+    </div>
+    <div class="report-box" id="report-box">
+      <p class="report-placeholder">点击上方时间段，AI 将自动为你生成分析报告</p>
+    </div>
+    <button class="report-gen-btn" id="report-gen-btn">🔬 生成报告</button>
   </div>
 
   <!-- ===== Profile Panel ===== -->
@@ -1605,6 +1894,63 @@ const EMOTIONS = [
   { key: 'confused', emoji: '😕', label: '困惑', color: '#dfe6e9' },
 ];
 
+const CAUSE_TAGS = [
+  { key: 'work',       emoji: '💼', label: '工作' },
+  { key: 'social',     emoji: '👫', label: '人际' },
+  { key: 'health',     emoji: '🏥', label: '健康' },
+  { key: 'love',       emoji: '💕', label: '恋爱' },
+  { key: 'family',     emoji: '🏠', label: '家庭' },
+  { key: 'friendship', emoji: '🤝', label: '友情' },
+  { key: 'study',      emoji: '📖', label: '学习' },
+  { key: 'money',      emoji: '💰', label: '余额' },
+  { key: 'sleep',      emoji: '😴', label: '作息' },
+  { key: 'exercise',   emoji: '💪', label: '健身' },
+  { key: 'food',       emoji: '🍔', label: '美食' },
+  { key: 'milk_tea',   emoji: '🧋', label: '奶茶' },
+  { key: 'movie',      emoji: '🎬', label: '电影' },
+  { key: 'drama',      emoji: '📺', label: '追剧' },
+  { key: 'music',      emoji: '🎵', label: '音乐' },
+  { key: 'game',       emoji: '🎮', label: '游戏' },
+  { key: 'reading',    emoji: '📚', label: '阅读' },
+  { key: 'painting',   emoji: '🎨', label: '画画' },
+  { key: 'travel',     emoji: '✈️', label: '旅行' },
+  { key: 'shopping',   emoji: '🛍️', label: '逛街' },
+  { key: 'pet',        emoji: '🐱', label: '宠物' },
+  { key: 'beauty',     emoji: '💄', label: '变美' },
+  { key: 'tidy',       emoji: '🧹', label: '整理' },
+  { key: 'stay_up',    emoji: '🦉', label: '熬夜' },
+  { key: 'anime',      emoji: '💇', label: '动漫' },
+  { key: 'plant',      emoji: '🌱', label: '植物' },
+];
+
+const WEATHER_OPTIONS = [
+  { key: 'sunny',          emoji: '☀️',  label: '晴' },
+  { key: 'partly_cloudy',  emoji: '⛅',  label: '多云' },
+  { key: 'cloudy',         emoji: '☁️',  label: '阴' },
+  { key: 'rainy',          emoji: '🌧️', label: '雨' },
+  { key: 'stormy',         emoji: '⛈️',  label: '雷雨' },
+  { key: 'snowy',          emoji: '❄️',  label: '雪' },
+];
+
+const DIARY_CATEGORIES = [
+  { key: 'daily',  emoji: '📝', label: '日常' },
+  { key: 'work',   emoji: '💼', label: '工作' },
+  { key: 'love',   emoji: '💕', label: '恋爱' },
+  { key: 'health', emoji: '🌿', label: '身心' },
+];
+
+const LIFE_TAGS = [
+  { key: 'sleep_enough', label: '睡够了',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' },
+  { key: 'sleep_little', label: '没睡够',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>' },
+  { key: 'stay_up',      label: '熬夜了',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><circle cx="17" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="9" r="0.7" fill="currentColor" stroke="none"/></svg>' },
+  { key: 'eat_normal',   label: '正常吃',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 12h18"/><path d="M5 12a7 7 0 0 1 14 0"/></svg>' },
+  { key: 'eat_more',     label: '吃多了',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 12h18"/><path d="M5 12a7 7 0 0 1 14 0"/><path d="M8 8c0-1.5 1-2 0-3.5M12 8c0-1.5 1-2 0-3.5M16 8c0-1.5 1-2 0-3.5"/></svg>' },
+  { key: 'eat_less',     label: '没怎么吃', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 12h18"/><path d="M7 12a5 5 0 0 1 10 0"/></svg>' },
+  { key: 'exercise_yes', label: '有运动',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="14" cy="4" r="2"/><path d="M6 20l3-6 3 2 4-6"/><path d="M6 20l2.5-6L6 11"/></svg>' },
+  { key: 'exercise_no',  label: '没运动',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v5"/><path d="M9 20l3-5 3 5"/><path d="M8 11h8"/></svg>' },
+  { key: 'period',       label: '生理期',   icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 3c0 0-7 8-7 12a7 7 0 0 0 14 0c0-4-7-12-7-12z"/></svg>' },
+];
+
 const SCENES = {
   sunny: {
     className: 'scene-sunny',
@@ -1639,6 +1985,18 @@ const SCENES = {
 };
 
 let selectedEmotion = null;
+let pendingImage = null;
+let pendingAudio = null;
+let selectedTags = [];
+let selectedWeather = null;
+let selectedCategory = 'daily';
+let selectedLife = [];
+let historyFilter = 'all';
+let mediaRecorder = null;
+let audioChunks = [];
+let recordingTimer = null;
+let recordingSeconds = 0;
+let isRecording = false;
 
 function getRecords() {
   try {
@@ -1845,8 +2203,8 @@ function navigateTo(tab) {
   const panel = document.getElementById('panel-' + tab);
   if (panel) panel.classList.add('active');
 
-  if (tab === 'history') renderHistory();
-  if (tab === 'stats') renderStats();
+  if (tab === 'history') { renderHistoryFilter(); renderHistory(); }
+  if (tab === 'stats') { renderStats(); renderWordCloud(); }
   if (tab === 'chat') { renderChat(); }
   if (tab === 'letter') { renderLetter(); renderLetterHistory(); }
   if (tab === 'profile') { renderProfile(); }
@@ -1935,6 +2293,155 @@ EMOTIONS.forEach(em => {
   grid.appendChild(div);
 });
 
+// ===== Category Tabs =====
+const catTabs = document.getElementById('category-tabs');
+function renderCatTabs() {
+  catTabs.innerHTML = '';
+  DIARY_CATEGORIES.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'category-tab' + (c.key === selectedCategory ? ' active' : '');
+    btn.textContent = c.emoji + ' ' + c.label;
+    btn.dataset.key = c.key;
+    btn.addEventListener('click', () => {
+      selectedCategory = c.key;
+      renderCatTabs();
+    });
+    catTabs.appendChild(btn);
+  });
+}
+renderCatTabs();
+
+// ===== Cause Tags =====
+const causeGrid = document.getElementById('cause-tags-grid');
+CAUSE_TAGS.forEach(t => {
+  const div = document.createElement('div');
+  div.className = 'cause-tag';
+  div.innerHTML = `<span class="ct-emoji">${t.emoji}</span><span class="ct-label">${t.label}</span>`;
+  div.addEventListener('click', () => {
+    div.classList.toggle('selected');
+    if (div.classList.contains('selected')) selectedTags.push(t);
+    else selectedTags = selectedTags.filter(x => x.key !== t.key);
+  });
+  causeGrid.appendChild(div);
+});
+
+// ===== Weather Row =====
+const weatherRow = document.getElementById('weather-row');
+WEATHER_OPTIONS.forEach(w => {
+  const div = document.createElement('div');
+  div.className = 'weather-option';
+  div.innerHTML = `<span class="wo-emoji">${w.emoji}</span><span class="wo-label">${w.label}</span>`;
+  div.addEventListener('click', () => {
+    if (div.classList.contains('selected')) {
+      div.classList.remove('selected');
+      selectedWeather = null;
+    } else {
+      weatherRow.querySelectorAll('.weather-option').forEach(d => d.classList.remove('selected'));
+      div.classList.add('selected');
+      selectedWeather = w;
+    }
+  });
+  weatherRow.appendChild(div);
+});
+
+// ===== Life Tags =====
+const lifeRow = document.getElementById('life-tags-row');
+LIFE_TAGS.forEach(t => {
+  const btn = document.createElement('button');
+  btn.className = 'life-tag';
+  btn.innerHTML = `<span class="lt-icon">${t.icon}</span><span class="lt-label">${t.label}</span>`;
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('selected');
+    if (btn.classList.contains('selected')) selectedLife.push(t);
+    else selectedLife = selectedLife.filter(x => x.key !== t.key);
+  });
+  lifeRow.appendChild(btn);
+});
+
+// ===== Image Picker =====
+document.getElementById('btn-image').addEventListener('click', () => {
+  document.getElementById('image-picker').click();
+});
+document.getElementById('image-picker').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 800;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      pendingImage = canvas.toDataURL('image/jpeg', 0.7);
+      document.getElementById('image-preview-img').src = pendingImage;
+      document.getElementById('image-preview').style.display = '';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+document.getElementById('image-preview-remove').addEventListener('click', () => {
+  pendingImage = null;
+  document.getElementById('image-preview').style.display = 'none';
+  document.getElementById('image-preview-img').src = '';
+});
+
+// ===== Audio Recorder =====
+document.getElementById('btn-voice').addEventListener('click', async () => {
+  if (isRecording) {
+    mediaRecorder.stop();
+    if (mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    clearInterval(recordingTimer);
+    isRecording = false;
+    document.getElementById('btn-voice').classList.remove('recording');
+    document.getElementById('record-status').textContent = '⏳ 处理中...';
+    return;
+  }
+  if (pendingAudio) { pendingAudio = null; document.getElementById('record-status').textContent = ''; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+    mediaRecorder = new MediaRecorder(stream, { mimeType });
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: mimeType });
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingAudio = reader.result;
+        document.getElementById('record-status').innerHTML =
+          '🔊 <audio controls src="' + pendingAudio + '" style="height:32px;vertical-align:middle"></audio> ' +
+          '<button onclick="clearPendingAudio()" style="background:none;border:none;cursor:pointer;font-size:14px;color:#e74c3c;vertical-align:middle">×</button>';
+      };
+      reader.readAsDataURL(blob);
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    recordingSeconds = 0;
+    document.getElementById('btn-voice').classList.add('recording');
+    recordingTimer = setInterval(() => {
+      recordingSeconds++;
+      const m = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
+      const s = String(recordingSeconds % 60).padStart(2, '0');
+      document.getElementById('record-status').textContent = '🔴 ' + m + ':' + s;
+    }, 1000);
+  } catch (err) {
+    showToast('⚠️ 麦克风权限被拒绝');
+  }
+});
+
+function clearPendingAudio() {
+  pendingAudio = null;
+  document.getElementById('record-status').textContent = '';
+}
+
 // ===== Submit =====
 document.getElementById('submit-btn').addEventListener('click', () => {
   if (!selectedEmotion) return;
@@ -1943,14 +2450,32 @@ document.getElementById('submit-btn').addEventListener('click', () => {
     key: selectedEmotion.key,
     emoji: selectedEmotion.emoji,
     label: selectedEmotion.label,
+    category: selectedCategory,
+    tags: selectedTags.map(t => t.label),
+    weather: selectedWeather ? selectedWeather.label : null,
+    weatherEmoji: selectedWeather ? selectedWeather.emoji : null,
+    life: selectedLife.map(t => t.label),
     note: document.getElementById('note-input').value.trim(),
+    image: pendingImage,
+    audio: pendingAudio,
     timestamp: Date.now(),
   });
   saveRecords(records);
 
   selectedEmotion = null;
+  pendingImage = null;
+  pendingAudio = null;
+  selectedTags = [];
+  selectedWeather = null;
+  selectedLife = [];
   grid.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+  causeGrid.querySelectorAll('.cause-tag').forEach(c => c.classList.remove('selected'));
+  weatherRow.querySelectorAll('.weather-option').forEach(c => c.classList.remove('selected'));
+  lifeRow.querySelectorAll('.life-tag').forEach(c => c.classList.remove('selected'));
   document.getElementById('note-input').value = '';
+  document.getElementById('image-preview').style.display = 'none';
+  document.getElementById('image-preview-img').src = '';
+  document.getElementById('record-status').textContent = '';
   document.getElementById('submit-btn').disabled = true;
 
   showToast('记录成功 ✓');
@@ -1958,9 +2483,28 @@ document.getElementById('submit-btn').addEventListener('click', () => {
 });
 
 // ===== History =====
+function renderHistoryFilter() {
+  const filterEl = document.getElementById('history-filter');
+  const counts = { all: getRecords().length };
+  DIARY_CATEGORIES.forEach(c => { counts[c.key] = getRecords().filter(r => r.category === c.key).length; });
+  let html = `<button class="hf-btn ${historyFilter === 'all' ? 'active' : ''}" data-filter="all">全部 (${counts.all})</button>`;
+  DIARY_CATEGORIES.forEach(c => {
+    html += `<button class="hf-btn ${historyFilter === c.key ? 'active' : ''}" data-filter="${c.key}">${c.emoji} ${c.label} (${counts[c.key]})</button>`;
+  });
+  filterEl.innerHTML = html;
+  filterEl.querySelectorAll('.hf-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      historyFilter = btn.dataset.filter;
+      renderHistoryFilter();
+      renderHistory();
+    });
+  });
+}
+
 function renderHistory() {
   const container = document.getElementById('history-container');
-  const records = getRecords();
+  let records = getRecords();
+  if (historyFilter !== 'all') records = records.filter(r => r.category === historyFilter);
   if (records.length === 0) {
     container.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>还没有记录<br>去「记录」页写下你的心情吧</p></div>';
     return;
@@ -1976,6 +2520,11 @@ function renderHistory() {
         <span class="history-time">${formatTime(r.timestamp)}</span>
       </div>`;
     if (r.note) html += `<div class="history-note">${escapeHtml(r.note)}</div>`;
+    if (r.tags && r.tags.length) html += `<div class="history-tags">${r.tags.map(t => `<span class="history-tag-chip">${t}</span>`).join('')}</div>`;
+    if (r.weatherEmoji) html += `<div class="history-weather">${r.weatherEmoji} ${r.weather}</div>`;
+    if (r.life && r.life.length) html += `<div class="history-life">${r.life.map(t => `<span class="history-life-chip">${t}</span>`).join('')}</div>`;
+    if (r.image) html += `<div class="history-image"><img src="${r.image}" loading="lazy"></div>`;
+    if (r.audio) html += `<div class="history-audio"><audio controls src="${r.audio}" style="width:100%;height:36px;margin-top:6px"></audio></div>`;
     html += '</div>';
   });
   html += '</div>';
@@ -1988,6 +2537,7 @@ function renderHistory() {
       const records = getRecords();
       records.splice(idx, 1);
       saveRecords(records);
+      renderHistoryFilter();
       renderHistory();
       updateHomePreviews();
       showToast('已删除');
@@ -2152,7 +2702,12 @@ document.getElementById('cal-grid').addEventListener('click', (e) => {
       <span class="dm-emoji">${r.emoji}</span>
       <div class="dm-info">
         <div class="dm-label">${r.label}</div>
+        ${r.tags && r.tags.length ? `<div class="dm-tags">${r.tags.map(t => `<span class="dm-tag-chip">${t}</span>`).join('')}</div>` : ''}
+        ${r.weatherEmoji ? `<div class="dm-weather">${r.weatherEmoji} ${r.weather}</div>` : ''}
+        ${r.life && r.life.length ? `<div class="dm-life">${r.life.map(t => `<span class="dm-life-chip">${t}</span>`).join('')}</div>` : ''}
         ${r.note ? `<div class="dm-note">${escapeHtml(r.note)}</div>` : ''}
+        ${r.image ? `<div class="dm-image"><img src="${r.image}" loading="lazy"></div>` : ''}
+        ${r.audio ? `<div class="dm-audio"><audio controls src="${r.audio}" style="width:100%;height:36px"></audio></div>` : ''}
       </div>
       <span class="dm-time">${formatTime(r.timestamp)}</span>
     </div>
@@ -2168,13 +2723,352 @@ document.getElementById('day-modal').addEventListener('click', (e) => {
   }
 });
 
+// ===== Word Cloud =====
+const WC_STOP = new Set(['的','了','在','是','我','有','和','就','不','人','都','一','一个','上','也','很','到','说','要','去','你','会','着','没有','看','好','自己','这','他','她','它','们','那','被','从','把','让','用','以','为','但','如果','虽然','因为','所以','可以','这个','那个','什么','怎么','为什么','没','还','又','再','才','已经','可能','应该','想','知道','觉得','感觉','今天','昨天','明天','时候','东西','事情','真的','其实','然后','后来','只是','不过','还是','或者','以及','或者','但是','而是','不是','就是','只是','还有','如果','虽然','因为','所以','可以','已经','可能','应该','需要','想要','希望','喜欢','觉得','知道','明白','想到','遇到','发生','开始','结束','变成','成为','觉得','认为','相信','希望','期待','担心','害怕','难过','开心','生气','高兴','紧张','焦虑','压力','无聊','疲惫','困','饿','冷','热','累']);
+
+function extractWords(text) {
+  const clean = text.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, ' ');
+  const raw = clean.split(/\s+/).filter(w => w.length >= 2 && !WC_STOP.has(w));
+  const bigrams = [];
+  for (let i = 0; i < raw.length - 1; i++) {
+    const bg = raw[i] + raw[i + 1];
+    if (!WC_STOP.has(bg) && bg.length === 4) bigrams.push(bg);
+  }
+  return [...raw, ...bigrams];
+}
+
+let wcMonthOffset = 0;
+function renderWordCloud() {
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth() - wcMonthOffset, 1);
+  const y = target.getFullYear(), m = target.getMonth();
+  document.getElementById('wc-month').textContent = y + '年' + (m + 1) + '月';
+  const records = getRecords().filter(r => {
+    const d = new Date(r.timestamp);
+    return d.getFullYear() === y && d.getMonth() === m && r.note;
+  });
+  const freq = {};
+  records.forEach(r => {
+    extractWords(r.note).forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+  });
+  const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 40);
+  const box = document.getElementById('wordcloud-box');
+  if (sorted.length === 0) { box.innerHTML = '<p style="color:#aaa;font-size:13px">本月暂无日记内容</p>'; return; }
+  const max = sorted[0][1];
+  const colors = ['#6c5ce7','#00b894','#e17055','#fdcb6e','#74b9ff','#fd79a8','#a29bfe','#00cec9','#fab1a0'];
+  box.innerHTML = sorted.map(([w, c], i) => {
+    const size = 14 + Math.round((c / max) * 24);
+    const color = colors[i % colors.length];
+    return `<span class="wc-word" style="font-size:${size}px;color:${color}" title="${c}次">${w}</span>`;
+  }).join('');
+}
+document.getElementById('wc-prev').addEventListener('click', () => { wcMonthOffset++; renderWordCloud(); });
+document.getElementById('wc-next').addEventListener('click', () => { if (wcMonthOffset > 0) wcMonthOffset--; renderWordCloud(); });
+
+// ===== Correlation Analysis =====
+const MOOD_SCORES = { happy: 100, excited: 90, grateful: 85, calm: 70, confused: 45, tired: 30, anxious: 20, sad: 10, angry: 5 };
+
+function pearson(x, y) {
+  const n = x.length;
+  if (n < 3) return 0;
+  const mx = x.reduce((a, b) => a + b, 0) / n;
+  const my = y.reduce((a, b) => a + b, 0) / n;
+  let num = 0, dx = 0, dy = 0;
+  for (let i = 0; i < n; i++) {
+    const xi = x[i] - mx, yi = y[i] - my;
+    num += xi * yi; dx += xi * xi; dy += yi * yi;
+  }
+  const denom = Math.sqrt(dx * dy);
+  return denom === 0 ? 0 : num / denom;
+}
+
+function findCorrelations() {
+  const records = getRecords();
+  if (records.length < 5) return { pairs: [], rules: [] };
+  const scores = records.map(r => MOOD_SCORES[r.key] ?? 50);
+
+  const factors = {};
+  records.forEach((r, i) => {
+    (r.tags || []).forEach(t => {
+      if (!factors[t]) factors[t] = new Array(records.length).fill(0);
+      factors[t][i] = 1;
+    });
+    if (r.weather) {
+      const k = '天气:' + r.weather;
+      if (!factors[k]) factors[k] = new Array(records.length).fill(0);
+      factors[k][i] = 1;
+    }
+    (r.life || []).forEach(t => {
+      if (!factors[t]) factors[t] = new Array(records.length).fill(0);
+      factors[t][i] = 1;
+    });
+  });
+
+  const pairs = Object.entries(factors)
+    .map(([name, arr]) => ({ name, r: pearson(arr, scores) }))
+    .filter(p => Math.abs(p.r) >= 0.15)
+    .sort((a, b) => Math.abs(b.r) - Math.abs(a.r))
+    .slice(0, 12);
+
+  // Apriori: find frequent pairs
+  const itemsets = records.map(r => {
+    const items = new Set();
+    items.add(r.label);
+    (r.tags || []).forEach(t => items.add(t));
+    if (r.weather) items.add('天气:' + r.weather);
+    (r.life || []).forEach(t => items.add(t));
+    return items;
+  });
+  const N = itemsets.length;
+  const pairCount = {};
+  itemsets.forEach(set => {
+    const arr = [...set];
+    for (let i = 0; i < arr.length; i++)
+      for (let j = i + 1; j < arr.length; j++) {
+        const key = arr[i] < arr[j] ? arr[i] + '|' + arr[j] : arr[j] + '|' + arr[i];
+        pairCount[key] = (pairCount[key] || 0) + 1;
+      }
+  });
+  const rules = Object.entries(pairCount)
+    .map(([k, c]) => {
+      const [a, b] = k.split('|');
+      const sup = c / N;
+      const confA = c / (itemsets.filter(s => s.has(a)).length || 1);
+      const confB = c / (itemsets.filter(s => s.has(b)).length || 1);
+      return { a, b, sup, conf: Math.max(confA, confB), count: c };
+    })
+    .filter(r => r.sup >= 0.05 && r.conf >= 0.3)
+    .sort((a, b) => b.conf - a.conf)
+    .slice(0, 10);
+
+  return { pairs, rules };
+}
+
+function renderCorrelation() {
+  const box = document.getElementById('corr-box');
+  const { pairs, rules } = findCorrelations();
+  if (pairs.length === 0 && rules.length === 0) {
+    box.innerHTML = '<p class="report-placeholder">记录多一点才能帮你发现规律哦～</p>';
+    return;
+  }
+  let html = '';
+  if (pairs.length) {
+    html += '<div class="corr-title">📊 哪些事影响你的心情</div>';
+    pairs.forEach(p => {
+      const pct = Math.round(Math.abs(p.r) * 100);
+      const color = p.r > 0 ? '#00b894' : '#e74c3c';
+      const effect = p.r > 0 ? '心情变好 ↑' : '心情变差 ↓';
+      html += `<div class="corr-item">
+        <span class="corr-label">${p.name}</span>
+        <div class="corr-bar-bg"><div class="corr-bar" style="width:${pct}%;background:${color}"></div></div>
+        <span class="corr-val" style="color:${color}">${effect}</span>
+      </div>`;
+    });
+  }
+  if (rules.length) {
+    html += '<div class="corr-title">🔗 经常一起出现的变化</div>';
+    rules.forEach(r => {
+      html += `<div class="rule-item">${r.a} <span class="rule-arrow">→</span> ${r.b}<span class="rule-conf">· 每10次里有${Math.round(r.conf * 10)}次会这样</span></div>`;
+    });
+  }
+  box.innerHTML = html;
+}
+document.getElementById('corr-gen-btn').addEventListener('click', () => {
+  document.getElementById('corr-gen-btn').disabled = true;
+  document.getElementById('corr-gen-btn').textContent = '⏳ 分析中...';
+  setTimeout(() => { renderCorrelation(); document.getElementById('corr-gen-btn').disabled = false; document.getElementById('corr-gen-btn').textContent = '🔬 开始分析'; }, 300);
+});
+
+// ===== AI Sentiment Analysis =====
+let sentimentMode = 'detail';
+document.querySelectorAll('#sentiment-tabs .report-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#sentiment-tabs .report-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    sentimentMode = tab.dataset.mode;
+  });
+});
+
+const SENTIMENT_PROMPT = `你是一位专业的情绪分析师。请分析以下日记内容，完成两个任务：
+
+【任务1：细分情绪识别】
+对每条日记，识别以下6类情绪的强度（0-100）：
+- 焦虑：对未来担忧、紧张不安
+- 孤独：感到孤单、无人理解
+- 疲惫：身心疲倦、无力感
+- 愤怒：生气、不满、委屈
+- 憧憬：期待、希望、向往
+- 委屈：被误解、不公平感
+
+【任务2：隐性情绪检测】
+识别"表面写开心但文字隐含压抑"的情况。例如：
+- "今天和朋友出去玩了很开心" → 表面开心，但如果上下文有转折可能是隐性压抑
+- "一切都好" → 可能是回避型表达
+- 过度使用感叹号和积极词汇 → 可能是防御性乐观
+
+请严格按以下JSON格式返回（不要包含其他文字）：
+{
+  "entries": [
+    {
+      "date": "日期",
+      "text": "原文前20字",
+      "emotions": {"焦虑":0,"孤独":0,"疲惫":0,"愤怒":0,"憧憬":0,"委屈":0},
+      "dominant": "最主要情绪",
+      "hidden": false,
+      "hiddenNote": ""
+    }
+  ],
+  "summary": {
+    "avgEmotions": {"焦虑":0,"孤独":0,"疲惫":0,"愤怒":0,"憧憬":0,"委屈":0},
+    "hiddenCount": 0,
+    "hiddenRatio": 0,
+    "insight": "一段话总结"
+  }
+}`;
+
+document.getElementById('sentiment-gen-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('sentiment-gen-btn');
+  const box = document.getElementById('sentiment-box');
+  const records = getRecords().filter(r => r.note).slice(-30);
+  if (records.length === 0) { box.innerHTML = '<p class="report-placeholder">暂无日记内容可分析</p>'; return; }
+  btn.disabled = true; btn.textContent = '⏳ AI 分析中...';
+  const textData = records.map(r => `[${new Date(r.timestamp).toLocaleDateString('zh-CN')}] ${r.emoji}${r.label}：${r.note.substring(0, 150)}`).join('\n');
+  try {
+    const res = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [
+          { role: 'system', content: SENTIMENT_PROMPT },
+          { role: 'user', content: textData }
+        ],
+        temperature: 0.3,
+        max_tokens: 2000,
+      }),
+    });
+    if (!res.ok) throw new Error('请求失败');
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '{}';
+    const parsed = JSON.parse(text.replace(/```json\s*/g, '').replace(/```\s*/g, ''));
+    window._sentimentData = parsed;
+    renderSentiment();
+  } catch (err) {
+    box.innerHTML = '<p class="report-placeholder">⚠️ 分析失败：' + err.message + '</p>';
+  }
+  btn.disabled = false; btn.textContent = '🧠 开始分析';
+});
+
+function renderSentiment() {
+  const box = document.getElementById('sentiment-box');
+  const data = window._sentimentData;
+  if (!data) return;
+  if (sentimentMode === 'detail') {
+    const avg = data.summary?.avgEmotions || {};
+    const emojis = { 焦虑:'😰', 孤独:'🥺', 疲惫:'😫', 愤怒:'😠', 憧憬:'🌟', 委屈:'😢' };
+    const colors = { 焦虑:'#a29bfe', 孤独:'#74b9ff', 疲惫:'#b2bec3', 愤怒:'#e17055', 憧憬:'#fdcb6e', 委屈:'#fd79a8' };
+    let html = '<div class="sentiment-grid">';
+    Object.entries(avg).forEach(([k, v]) => {
+      const pct = Math.min(100, Math.round(v));
+      html += `<div class="sentiment-item">
+        <div class="si-emoji">${emojis[k] || '❓'}</div>
+        <div class="si-label">${k}</div>
+        <div class="si-bar"><div class="si-fill" style="width:${pct}%;background:${colors[k] || '#999'}"></div></div>
+        <div class="si-label" style="margin-top:2px;font-weight:600">${pct}%</div>
+      </div>`;
+    });
+    html += '</div>';
+    if (data.summary?.insight) html += `<div style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.6">${data.summary.insight}</div>`;
+    box.innerHTML = html;
+  } else {
+    const entries = (data.entries || []).filter(e => e.hidden);
+    const ratio = data.summary?.hiddenRatio || 0;
+    let html = `<div style="margin-bottom:8px;font-size:13px">AI 检测到 <b style="color:#e74c3c">${data.summary?.hiddenCount || 0} 条</b>日记可能存在「文字说开心，但内心不太开心」的情况（${(ratio * 100).toFixed(0)}%）</div>`;
+    if (entries.length === 0) {
+      html += '<div style="color:#00b894;font-size:13px">✓ 你的文字和情绪表达比较一致，没有检测到明显的情绪隐藏</div>';
+    } else {
+      entries.forEach(e => {
+        html += `<div class="hidden-alert">
+          <div class="hidden-alert-title">⚠️ ${e.date} 「${e.text}...」</div>
+          <div>${e.hiddenNote || '写的时候可能在压抑自己的真实感受'}</div>
+        </div>`;
+      });
+    }
+    box.innerHTML = html;
+  }
+}
+
+// ===== AI Report =====
+let reportPeriod = 'week';
+document.querySelectorAll('.report-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    reportPeriod = tab.dataset.period;
+  });
+});
+
+const REPORT_PROMPT = `你是一位温暖专业的心理健康分析师。请根据用户的情绪日记数据，生成一份全面的心理健康分析报告。
+
+报告格式要求：
+1. 【整体状态概述】—— 用2-3句话总结这段时间的整体心理状态
+2. 【情绪分布分析】—— 哪些情绪最频繁，占比如何
+3. 【高频诱因分析】—— 哪些事情最常触发负面/正面情绪
+4. 【生活状态关联】—— 睡眠、饮食、运动与情绪的关联
+5. 【情绪变化规律】—— 是否有明显的波动模式
+6. 【科学建议】—— 2-3条针对性的改善建议
+
+要求：
+- 语言温暖专业，避免冰冷术语
+- 基于数据说话，引用具体数字
+- 负面诱因要重点分析但不制造焦虑
+- 总字数300-500字`;
+
+document.getElementById('report-gen-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('report-gen-btn');
+  const box = document.getElementById('report-box');
+  const records = getRecords();
+  const now = Date.now();
+  let start, label;
+  if (reportPeriod === 'week') { start = now - 7 * 86400000; label = '最近一周'; }
+  else if (reportPeriod === 'month') { start = now - 30 * 86400000; label = '最近一个月'; }
+  else { start = now - 365 * 86400000; label = '最近一年'; }
+  const filtered = records.filter(r => r.timestamp >= start);
+  if (filtered.length === 0) { box.innerHTML = '<p class="report-placeholder">该时间段暂无记录</p>'; return; }
+  btn.disabled = true; btn.textContent = '⏳ AI 分析中...';
+  const emotionMap = {};
+  filtered.forEach(r => { emotionMap[r.label] = (emotionMap[r.label] || 0) + 1; });
+  const tagMap = {};
+  filtered.forEach(r => { (r.tags || []).forEach(t => { tagMap[t] = (tagMap[t] || 0) + 1; }); });
+  const lifeMap = {};
+  filtered.forEach(r => { (r.life || []).forEach(t => { lifeMap[t] = (lifeMap[t] || 0) + 1; }); });
+  const notes = filtered.filter(r => r.note).map(r => `[${new Date(r.timestamp).toLocaleDateString('zh-CN')}] ${r.emoji} ${r.label}：${r.note.substring(0, 100)}`).join('\n');
+  const dataSummary = `时间范围：${label}\n记录总数：${filtered.length}条\n情绪分布：${Object.entries(emotionMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${v}次)`).join('、')}\n诱因标签：${Object.entries(tagMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${v}次)`).join('、') || '无'}\n生活状态：${Object.entries(lifeMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${v}次)`).join('、') || '无'}\n\n日记摘录：\n${notes || '无'}`;
+  try {
+    const res = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AI_API_KEY}` },
+      body: JSON.stringify({
+        model: AI_MODEL,
+        messages: [
+          { role: 'system', content: REPORT_PROMPT },
+          { role: 'user', content: dataSummary }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500,
+      }),
+    });
+    if (!res.ok) throw new Error('请求失败');
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '生成失败';
+    box.textContent = text;
+  } catch (err) {
+    box.innerHTML = '<p class="report-placeholder">⚠️ 报告生成失败：' + err.message + '</p>';
+  }
+  btn.disabled = false; btn.textContent = '🔬 生成报告';
+});
+
 // ===== Mood Trend Line Chart =====
-const MOOD_SCORES = {
-  happy: 100, excited: 90, grateful: 85,
-  calm: 70,
-  confused: 45,
-  tired: 30, sad: 20, anxious: 15, angry: 10
-};
 const MOOD_COLORS = {
   happy: '#fdcb6e', excited: '#ff7675', grateful: '#fd79a8',
   calm: '#81ecec',
