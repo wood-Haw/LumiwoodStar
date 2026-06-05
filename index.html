@@ -320,6 +320,61 @@
   }
   .home-card .badge.show { display: block; }
 
+  /* ===== Password Modal ===== */
+  .auth-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+  }
+  .auth-overlay.show { opacity: 1; pointer-events: all; }
+  .auth-card {
+    background: rgba(255,255,255,0.06); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+    padding: 40px 30px; width: 320px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .auth-card .auth-icon { font-size: 48px; margin-bottom: 16px; }
+  .auth-card .auth-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .auth-card .auth-desc { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 24px; line-height: 1.5; }
+  .auth-card input {
+    width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08); color: #fff; font-size: 16px; text-align: center;
+    outline: none; margin-bottom: 16px; letter-spacing: 2px;
+  }
+  .auth-card input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0; }
+  .auth-card input:focus { border-color: rgba(255,255,255,0.3); }
+  .auth-btn {
+    width: 100%; padding: 12px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff; font-size: 16px; font-weight: 600; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .auth-btn:active { transform: scale(0.96); }
+  .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .auth-hint { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 12px; }
+  .auth-error { font-size: 13px; color: #ff7675; margin-bottom: 12px; display: none; }
+
+  /* ===== Sync Indicator ===== */
+  .sync-indicator {
+    position: fixed; top: 12px; right: 12px; z-index: 100;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 4px 12px 4px 8px;
+    font-size: 11px; color: rgba(255,255,255,0.7);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .sync-indicator.show { opacity: 1; }
+  .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #999; transition: background 0.3s;
+  }
+  .sync-dot.synced { background: #00b894; }
+  .sync-dot.syncing { background: #fdcb6e; animation: pulse 1s infinite; }
+  .sync-dot.error { background: #e74c3c; }
+  .sync-dot.offline { background: #636e72; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
   .home-card.record { border-color: #fdcb6e; }
   .home-card.history { border-color: #74b9ff; }
   .home-card.chat { border-color: #a29bfe; }
@@ -1865,7 +1920,28 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- Sync Indicator -->
+  <div class="sync-indicator" id="sync-indicator">
+    <div class="sync-dot offline" id="sync-dot"></div>
+    <span id="sync-text">离线</span>
+  </div>
+
+  <!-- Password Setup Modal -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-icon">🔐</div>
+      <div class="auth-title" id="auth-title">注册账号</div>
+      <div class="auth-desc" id="auth-desc">输入手机号和密码，换手机时用同一账号即可恢复所有记录</div>
+      <div class="auth-error" id="auth-error"></div>
+      <input type="tel" id="auth-phone" placeholder="手机号" maxlength="11" />
+      <input type="password" id="auth-password" placeholder="设置密码（4-20位）" maxlength="20" />
+      <input type="password" id="auth-password2" placeholder="再次输入密码" maxlength="20" style="display:none" />
+      <button class="auth-btn" id="auth-btn">确认</button>
+      <div class="auth-hint" id="auth-hint">密码和手机号用于加密和识别你的数据</div>
+    </div>
+  </div>
 
 <!-- ===== Day Detail Modal ===== -->
 <div class="day-modal-overlay" id="day-modal">
@@ -1881,7 +1957,37 @@
 <audio id="ambient-audio" preload="auto" loop
   src="https://bigsoundbank.com/UPLOAD/mp3/2749.mp3"></audio>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+// ===== Supabase Sync Module =====
+const SB_URL = 'https://viqgyqwhwhvlhwpkjqdt.supabase.co';
+const SB_KEY = 'sb_publishable_IusmO6UxnPVnnBpGkhvIjg_2W_tvxxA';
+let _sbClient = null, _cryptoKey = null, _phone = null;
+function initSupabase() { if (_sbClient) return _sbClient; _sbClient = window.supabase.createClient(SB_URL, SB_KEY); return _sbClient; }
+function getPhone() { return _phone || localStorage.getItem('user_phone'); }
+function setPhone(p) { _phone = p; localStorage.setItem('user_phone', p); }
+async function hashPassword(password) { const enc = new TextEncoder(); const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']); const salt = crypto.getRandomValues(new Uint8Array(16)); const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']); return { key, salt: Array.from(salt) }; }
+async function deriveKeyFromPassword(password, salt) { const enc = new TextEncoder(); const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']); return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: new Uint8Array(salt), iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']); }
+async function encryptData(data, key) { const enc = new TextEncoder(); const iv = crypto.getRandomValues(new Uint8Array(12)); const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data))); return { iv: Array.from(iv), data: Array.from(new Uint8Array(encrypted)) }; }
+async function decryptData(encObj, key) { const dec = new TextDecoder(); const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(encObj.iv) }, key, new Uint8Array(encObj.data)); return JSON.parse(dec.decode(decrypted)); }
+function savePasswordHash(hash) { localStorage.setItem('password_hash', hash); }
+function getPasswordHash() { return localStorage.getItem('password_hash'); }
+function hasPassword() { return !!getPasswordHash(); }
+let _syncStatus = 'offline', _syncListeners = [];
+function onSyncStatusChange(cb) { _syncListeners.push(cb); }
+function setSyncStatus(status) { _syncStatus = status; _syncListeners.forEach(cb => cb(status)); }
+function getSyncStatus() { return _syncStatus; }
+async function syncToCloud(table, data) { if (!_sbClient || !_cryptoKey || !_phone) return; setSyncStatus('syncing'); try { const encrypted = await encryptData(data, _cryptoKey); const { data: existing } = await _sbClient.from(table).select('id').eq('phone', _phone).limit(1); if (existing && existing.length > 0) { await _sbClient.from(table).update({ data: encrypted }).eq('id', existing[0].id); } else { await _sbClient.from(table).insert({ phone: _phone, data: encrypted }); } setSyncStatus('synced'); } catch (err) { console.error('Sync to cloud failed:', err); setSyncStatus('error'); } }
+async function syncToCloudRaw(table, data) { if (!_sbClient || !_phone) return; setSyncStatus('syncing'); try { const { data: existing } = await _sbClient.from(table).select('id').eq('phone', _phone).limit(1); if (existing && existing.length > 0) { await _sbClient.from(table).update({ data }).eq('id', existing[0].id); } else { await _sbClient.from(table).insert({ phone: _phone, data }); } setSyncStatus('synced'); } catch (err) { console.error('Sync raw to cloud failed:', err); setSyncStatus('error'); } }
+async function syncFromCloudRaw(table) { if (!_sbClient || !_phone) return null; setSyncStatus('syncing'); try { const { data: rows, error } = await _sbClient.from(table).select('data').eq('phone', _phone).limit(1); if (error) throw error; if (!rows || rows.length === 0) { setSyncStatus('synced'); return null; } setSyncStatus('synced'); return rows[0].data; } catch (err) { console.error('Sync raw from cloud failed:', err); setSyncStatus('error'); return null; } }
+async function syncFromCloud(table) { if (!_sbClient || !_cryptoKey || !_phone) return null; setSyncStatus('syncing'); try { const { data: rows, error } = await _sbClient.from(table).select('data').eq('phone', _phone).limit(1); if (error) throw error; if (!rows || rows.length === 0) { setSyncStatus('synced'); return null; } const decrypted = await decryptData(rows[0].data, _cryptoKey); setSyncStatus('synced'); return decrypted; } catch (err) { console.error('Sync from cloud failed:', err); setSyncStatus('error'); return null; } }
+async function setupPassword(phone, password) { setPhone(phone); const { key, salt } = await hashPassword(password); _cryptoKey = key; const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password + salt.join(','))); const hashArray = Array.from(new Uint8Array(hashBuffer)); const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); savePasswordHash(hashHex); localStorage.setItem('key_salt', JSON.stringify(salt)); await syncToCloudRaw('auth', { salt, hash: hashHex }); await pullAndMerge(); }
+async function loginWithPassword(phone, password) { setPhone(phone); let salt; const saltStr = localStorage.getItem('key_salt'); if (saltStr && localStorage.getItem('user_phone') === phone) { salt = JSON.parse(saltStr); } else { const cloudAuth = await syncFromCloudRaw('auth'); if (cloudAuth && cloudAuth.salt) { salt = cloudAuth.salt; localStorage.setItem('key_salt', JSON.stringify(salt)); } else { throw new Error('NO_ACCOUNT'); } } const key = await deriveKeyFromPassword(password, salt); _cryptoKey = key; const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password + salt.join(','))); const hashArray = Array.from(new Uint8Array(hashBuffer)); const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); const cloudAuth = await syncFromCloudRaw('auth'); if (cloudAuth && cloudAuth.hash && cloudAuth.hash !== hashHex) throw new Error('WRONG_PASSWORD'); savePasswordHash(hashHex); await pullAndMerge(); }
+async function pullAndMerge() { const tables = [{ name: 'records', localKey: 'mood_records' }, { name: 'chats', localKey: 'chat_history' }, { name: 'letters', localKey: 'letter_letter_history' }, { name: 'profiles', localKey: 'profile_cache' }]; for (const t of tables) { const cloudData = await syncFromCloud(t.name); if (cloudData !== null) { if (t.name === 'profiles') { const local = localStorage.getItem(t.localKey); const localParsed = local ? JSON.parse(local) : null; if (!localParsed || (cloudData.updatedAt || '') > (localParsed.updatedAt || '')) { localStorage.setItem(t.localKey, JSON.stringify(cloudData)); } } else if (Array.isArray(cloudData)) { const localData = localStorage.getItem(t.localKey); const local = localData ? JSON.parse(localData) : null; const merged = mergeArrays(local || [], cloudData); localStorage.setItem(t.localKey, JSON.stringify(merged)); } } } }
+function mergeArrays(local, cloud) { const map = new Map(); if (Array.isArray(local)) local.forEach(item => { const key = item.timestamp || item.id || JSON.stringify(item); map.set(key, item); }); if (Array.isArray(cloud)) cloud.forEach(item => { const key = item.timestamp || item.id || JSON.stringify(item); const existing = map.get(key); if (!existing || (item.timestamp && item.timestamp > existing.timestamp)) map.set(key, item); }); return Array.from(map.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); }
+async function saveAndSync(localKey, cloudTable, data) { localStorage.setItem(localKey, JSON.stringify(data)); if (_cryptoKey) syncToCloud(cloudTable, data); }
+function checkAuthState() { if (hasPassword() && localStorage.getItem('key_salt') && localStorage.getItem('user_phone')) return 'has_password'; return 'no_password'; }
+
 const EMOTIONS = [
   { key: 'happy',    emoji: '😊', label: '开心', color: '#fdcb6e' },
   { key: 'calm',     emoji: '😌', label: '平静', color: '#81ecec' },
@@ -2006,6 +2112,9 @@ function getRecords() {
 
 function saveRecords(records) {
   localStorage.setItem('mood_records', JSON.stringify(records));
+  if (typeof _cryptoKey !== 'undefined' && _cryptoKey) {
+    syncToCloud('records', records);
+  }
 }
 
 function showToast(msg) {
@@ -3299,6 +3408,9 @@ function getChatHistory() {
 }
 function saveChatHistory(messages) {
   localStorage.setItem('chat_history', JSON.stringify(messages));
+  if (typeof _cryptoKey !== 'undefined' && _cryptoKey) {
+    syncToCloud('chats', messages);
+  }
 }
 
 function renderChat() {
@@ -3477,6 +3589,17 @@ function saveWeeklyLetter(content) {
   } catch {}
   versions.push({ content, weekLabel: getWeekLabel(), generatedAt: Date.now() });
   localStorage.setItem(key, JSON.stringify(versions));
+  // 同步所有信件到云端
+  if (typeof _cryptoKey !== 'undefined' && _cryptoKey) {
+    const allLetters = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('weekly_letter_')) {
+        try { allLetters[k] = JSON.parse(localStorage.getItem(k)); } catch {}
+      }
+    }
+    syncToCloud('letters', allLetters);
+  }
 }
 
 const LETTER_SYSTEM_PROMPT = `你是林间聊愈室（聊养院），坐落在静谧森林中的一座小木屋里。
@@ -4081,14 +4204,18 @@ async function generateProfile() {
     try {
       const t = document.getElementById('profile-mbti').textContent;
       if (t && t !== '--') {
-        localStorage.setItem('profile_cache', JSON.stringify({
+        const profileData = {
           traits: (parsed.traits || []),
           mbti: parsed.mbti,
           status: parsed.status,
           hobbies: (parsed.hobbies || []),
           message: parsed.message,
           updatedAt: meta.textContent.replace('最近更新：', '')
-        }));
+        };
+        localStorage.setItem('profile_cache', JSON.stringify(profileData));
+        if (typeof _cryptoKey !== 'undefined' && _cryptoKey) {
+          syncToCloud('profiles', profileData);
+        }
       }
     } catch {}
   } catch (err) {
@@ -4191,6 +4318,129 @@ checkWeeklyLetter();
 loadAvatar();
 // Preload TTS voices
 if (window.speechSynthesis) window.speechSynthesis.getVoices();
+
+// ===== Supabase Auth Flow =====
+try {
+(function initAuth() {
+  const overlay = document.getElementById('auth-overlay');
+  const title = document.getElementById('auth-title');
+  const desc = document.getElementById('auth-desc');
+  const errorEl = document.getElementById('auth-error');
+  const phoneInput = document.getElementById('auth-phone');
+  const pw1 = document.getElementById('auth-password');
+  const pw2 = document.getElementById('auth-password2');
+  const btn = document.getElementById('auth-btn');
+  const hint = document.getElementById('auth-hint');
+  const syncDot = document.getElementById('sync-dot');
+  const syncText = document.getElementById('sync-text');
+  const syncInd = document.getElementById('sync-indicator');
+
+  function updateSyncUI(status) {
+    syncDot.className = 'sync-dot ' + status;
+    const labels = { offline: '离线', syncing: '同步中', synced: '已同步', error: '同步失败' };
+    syncText.textContent = labels[status] || status;
+    syncInd.classList.add('show');
+  }
+  if (typeof onSyncStatusChange === 'function') onSyncStatusChange(updateSyncUI);
+
+  const state = checkAuthState();
+  if (state === 'no_password') {
+    overlay.classList.add('show');
+    title.textContent = '注册账号';
+    desc.textContent = '输入手机号和密码，换手机时用同一账号即可恢复所有记录';
+    phoneInput.style.display = 'block';
+    pw2.style.display = 'block';
+    hint.textContent = '密码和手机号用于加密和识别你的数据';
+    btn.textContent = '注册';
+  } else {
+    overlay.classList.add('show');
+    title.textContent = '登录';
+    desc.textContent = '输入手机号和密码查看你的日记';
+    phoneInput.style.display = 'block';
+    phoneInput.value = localStorage.getItem('user_phone') || '';
+    pw2.style.display = 'none';
+    hint.textContent = '';
+    btn.textContent = '解锁';
+  }
+
+  btn.addEventListener('click', async () => {
+    const phone = phoneInput.value.trim();
+    const password = pw1.value.trim();
+    errorEl.style.display = 'none';
+
+    if (!phone || !/^1\d{10}$/.test(phone)) {
+      errorEl.textContent = '请输入正确的11位手机号';
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!password) {
+      errorEl.textContent = '请输入密码';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    if (state === 'no_password') {
+      if (password.length < 4) {
+        errorEl.textContent = '密码至少4位';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (pw1.value !== pw2.value) {
+        errorEl.textContent = '两次密码不一致';
+        errorEl.style.display = 'block';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = '注册中...';
+      try {
+        if (typeof window.supabase === 'undefined') {
+          errorEl.textContent = '网络加载失败，请刷新重试';
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = '注册';
+          return;
+        }
+        initSupabase();
+        await setupPassword(phone, password);
+        overlay.classList.remove('show');
+        updateSyncUI('synced');
+        showToast('注册成功');
+      } catch (err) {
+        errorEl.textContent = '注册失败：' + err.message;
+        errorEl.style.display = 'block';
+      }
+      btn.disabled = false;
+      btn.textContent = '注册';
+    } else {
+      btn.disabled = true;
+      btn.textContent = '解锁中...';
+      try {
+        if (typeof window.supabase === 'undefined') {
+          errorEl.textContent = '网络加载失败，请刷新重试';
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = '解锁';
+          return;
+        }
+        initSupabase();
+        await loginWithPassword(phone, password);
+        overlay.classList.remove('show');
+        updateSyncUI('synced');
+      } catch (err) {
+        if (err.message === 'WRONG_PASSWORD') errorEl.textContent = '密码错误';
+        else if (err.message === 'NO_ACCOUNT') errorEl.textContent = '该手机号未注册，请先注册';
+        else errorEl.textContent = '解锁失败：' + err.message;
+        errorEl.style.display = 'block';
+      }
+      btn.disabled = false;
+      btn.textContent = '解锁';
+    }
+  });
+
+  pw1.addEventListener('keydown', (e) => { if (e.key === 'Enter') pw2.style.display !== 'none' ? pw2.focus() : btn.click(); });
+  pw2.addEventListener('keydown', (e) => { if (e.key === 'Enter') btn.click(); });
+})();
+} catch(e) { console.error('Auth init error:', e); }
 </script>
 </body>
 </html>
